@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
-import { pool } from '../../config/database'
-import { logger } from '../../utils/logger'
+import { pool } from '../config/database'
+import { logger } from '../utils/logger'
 import { z } from 'zod'
 
 const router = Router()

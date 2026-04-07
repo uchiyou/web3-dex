@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { useAccount } from 'wagmi'
-import { parseEther, formatEther } from 'viem'
+import { parseEther } from 'viem'
 import { usePlaceOrder } from '@/hooks/useDex'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -87,26 +87,26 @@ export function TradeForm({ pairId = '0x' + '11'.repeat(32) }: TradeFormProps) {
 
   return (
     <div>
-      <h3 className="text-lg font-semibold text-white mb-4">Place Order</h3>
+      <h3 className="text-lg font-semibold text-binance-text mb-4">Place Order</h3>
       
       {/* Buy/Sell Tabs */}
-      <div className="grid grid-cols-2 gap-2 mb-4">
+      <div className="grid grid-cols-2 gap-1 mb-4 p-1 bg-binance-border rounded-md">
         <button
           onClick={() => setSide('buy')}
-          className={`py-2 rounded font-medium transition-colors ${
+          className={`py-2 rounded font-medium transition-colors text-sm ${
             side === 'buy'
-              ? 'bg-green-500 text-white'
-              : 'bg-dark-200 text-gray-400 hover:text-white'
+              ? 'bg-buy text-white'
+              : 'bg-transparent text-binance-text-muted hover:text-binance-text'
           }`}
         >
           Buy
         </button>
         <button
           onClick={() => setSide('sell')}
-          className={`py-2 rounded font-medium transition-colors ${
+          className={`py-2 rounded font-medium transition-colors text-sm ${
             side === 'sell'
-              ? 'bg-red-500 text-white'
-              : 'bg-dark-200 text-gray-400 hover:text-white'
+              ? 'bg-sell text-white'
+              : 'bg-transparent text-binance-text-muted hover:text-binance-text'
           }`}
         >
           Sell
@@ -117,20 +117,20 @@ export function TradeForm({ pairId = '0x' + '11'.repeat(32) }: TradeFormProps) {
       <div className="flex gap-2 mb-4">
         <button
           onClick={() => setOrderType('limit')}
-          className={`flex-1 py-2 rounded text-sm font-medium ${
+          className={`flex-1 py-2 rounded text-sm font-medium transition-colors ${
             orderType === 'limit'
-              ? 'bg-primary-500/20 text-primary-500 border border-primary-500'
-              : 'bg-dark-200 text-gray-400'
+              ? 'bg-binance-gold/20 text-binance-gold border border-binance-gold/50'
+              : 'bg-binance-border text-binance-text-muted hover:text-binance-text'
           }`}
         >
           Limit
         </button>
         <button
           onClick={() => setOrderType('market')}
-          className={`flex-1 py-2 rounded text-sm font-medium ${
+          className={`flex-1 py-2 rounded text-sm font-medium transition-colors ${
             orderType === 'market'
-              ? 'bg-primary-500/20 text-primary-500 border border-primary-500'
-              : 'bg-dark-200 text-gray-400'
+              ? 'bg-binance-gold/20 text-binance-gold border border-binance-gold/50'
+              : 'bg-binance-border text-binance-text-muted hover:text-binance-text'
           }`}
         >
           Market
@@ -139,8 +139,8 @@ export function TradeForm({ pairId = '0x' + '11'.repeat(32) }: TradeFormProps) {
 
       {/* Price Input */}
       {orderType === 'limit' && (
-        <div className="mb-4">
-          <label className="block text-sm text-gray-400 mb-1">Price (USD)</label>
+        <div className="mb-3">
+          <label className="block text-xs text-binance-text-muted mb-1">Price (USD)</label>
           <Input
             type="number"
             placeholder="0.00"
@@ -151,8 +151,8 @@ export function TradeForm({ pairId = '0x' + '11'.repeat(32) }: TradeFormProps) {
       )}
 
       {/* Quantity Input */}
-      <div className="mb-4">
-        <label className="block text-sm text-gray-400 mb-1">Quantity (ETH)</label>
+      <div className="mb-3">
+        <label className="block text-xs text-binance-text-muted mb-1">Quantity (ETH)</label>
         <Input
           type="number"
           placeholder="0.00"
@@ -167,7 +167,7 @@ export function TradeForm({ pairId = '0x' + '11'.repeat(32) }: TradeFormProps) {
           <button
             key={pct}
             onClick={() => setPercentage(pct)}
-            className="flex-1 py-1 text-xs rounded bg-dark-200 text-gray-400 hover:text-white"
+            className="flex-1 py-1 text-xs rounded bg-binance-border text-binance-text-muted hover:text-binance-text hover:bg-binance-border/80 transition-colors"
           >
             {pct}%
           </button>
@@ -175,10 +175,10 @@ export function TradeForm({ pairId = '0x' + '11'.repeat(32) }: TradeFormProps) {
       </div>
 
       {/* Total */}
-      <div className="mb-4 p-3 bg-dark-200 rounded">
+      <div className="mb-4 p-3 bg-binance-border rounded-md">
         <div className="flex justify-between text-sm">
-          <span className="text-gray-400">Total</span>
-          <span className="text-white font-medium">{total || '0.00'} USDT</span>
+          <span className="text-binance-text-muted">Total</span>
+          <span className="text-binance-text font-medium">{total || '0.00'} USDT</span>
         </div>
       </div>
 
@@ -188,8 +188,8 @@ export function TradeForm({ pairId = '0x' + '11'.repeat(32) }: TradeFormProps) {
         disabled={isPending || isConfirming || !isConnected}
         className={`w-full ${
           side === 'buy'
-            ? 'bg-green-500 hover:bg-green-600'
-            : 'bg-red-500 hover:bg-red-600'
+            ? 'bg-buy hover:bg-buy/90'
+            : 'bg-sell hover:bg-sell/90'
         }`}
       >
         {isPending
@@ -200,7 +200,7 @@ export function TradeForm({ pairId = '0x' + '11'.repeat(32) }: TradeFormProps) {
       </Button>
 
       {/* Fee Info */}
-      <p className="text-xs text-gray-500 mt-3 text-center">
+      <p className="text-xs text-binance-text-muted mt-3 text-center">
         Est. Fee: 0.1% • Maker: 0.05% • Taker: 0.1%
       </p>
     </div>

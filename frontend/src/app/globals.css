@@ -2,37 +2,51 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Binance Web3 DEX Design Tokens */
+:root {
+  --binance-bg: #0B0E11;
+  --binance-card: #1E2026;
+  --binance-border: #2A2E39;
+  --binance-gold: #F0B90B;
+  --binance-text: #EAECEF;
+  --binance-text-muted: #848E9C;
+  --binance-buy: #0ECB3B;
+  --binance-sell: #F6465D;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #1e293b;
-  border-radius: 4px;
+  background: #1E2026;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #475569;
-  border-radius: 4px;
+  background: #2A2E39;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
+  background: #3A3E49;
 }
 
 /* Base styles */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #0B0E11;
+  color: #EAECEF;
 }
 
 /* Utility classes */
 @layer utilities {
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-primary-600;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-binance-gold to-yellow-400;
   }
 
   .glass {
@@ -40,17 +54,21 @@ body {
   }
 
   .glow {
-    box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
+    box-shadow: 0 0 20px rgba(240, 185, 11, 0.3);
+  }
+
+  .card-binance {
+    @apply bg-binance-card rounded-lg border border-binance-border;
   }
 }
 
 /* Animation keyframes */
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 10px rgba(14, 165, 233, 0.3);
+    box-shadow: 0 0 10px rgba(240, 185, 11, 0.3);
   }
   50% {
-    box-shadow: 0 0 30px rgba(14, 165, 233, 0.6);
+    box-shadow: 0 0 30px rgba(240, 185, 11, 0.6);
   }
 }
 
@@ -60,6 +78,17 @@ body {
 
 /* Focus styles */
 *:focus-visible {
-  outline: 2px solid #0ea5e9;
+  outline: 2px solid #F0B90B;
   outline-offset: 2px;
+}
+
+/* Number input spinner removal */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
 }

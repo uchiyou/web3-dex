@@ -18,7 +18,7 @@ interface UseTradingPairResult {
 
 export function useTradingPair(pairId: `0x${string}`): UseTradingPairResult {
   const { data: reserves, isLoading } = useReadContract({
-    address: DEX_CORE_ADDRESS,
+    address: DEX_CORE_ADDRESS as `0x${string}`,
     abi: DEX_CORE_ABI,
     functionName: 'getPoolReserves',
     args: [pairId],
@@ -44,20 +44,20 @@ interface UseOrderBookResult {
 
 export function useOrderBook(pairId: `0x${string}`): UseOrderBookResult {
   const { data, isLoading } = useReadContract({
-    address: DEX_CORE_ADDRESS,
+    address: DEX_CORE_ADDRESS as `0x${string}`,
     abi: DEX_CORE_ABI,
     functionName: 'getOrderBook',
     args: [pairId],
   })
 
   const bids = data?.[0]?.map((order: any) => ({
-    price: order.price,
-    quantity: order.quantity - order.filledQuantity,
+    price: order.price as bigint,
+    quantity: BigInt(Number(order.quantity) - Number(order.filledQuantity)),
   })) || []
 
   const asks = data?.[1]?.map((order: any) => ({
-    price: order.price,
-    quantity: order.quantity - order.filledQuantity,
+    price: order.price as bigint,
+    quantity: BigInt(Number(order.quantity) - Number(order.filledQuantity)),
   })) || []
 
   return { bids, asks, isLoading }
@@ -84,12 +84,12 @@ export function usePlaceOrder() {
       if (!address) throw new Error('Wallet not connected')
 
       const functionName = params.orderType === 'market' ? 'placeMarketOrder' : 'placeLimitOrder'
-      const args = params.orderType === 'market'
+      const args: any = params.orderType === 'market'
         ? [params.pairId, params.direction === 'buy' ? 0 : 1, params.quantity]
         : [params.pairId, params.direction === 'buy' ? 0 : 1, params.price!, params.quantity, params.expiresAt || 0n]
 
       writeContract({
-        address: DEX_CORE_ADDRESS,
+        address: DEX_CORE_ADDRESS as `0x${string}`,
         abi: DEX_CORE_ABI,
         functionName,
         args,
@@ -135,7 +135,7 @@ export function useLiquidity() {
   const addLiquidity = useCallback(
     async (params: UseLiquidityParams) => {
       writeContract({
-        address: DEX_CORE_ADDRESS,
+        address: DEX_CORE_ADDRESS as `0x${string}`,
         abi: DEX_CORE_ABI,
         functionName: 'addLiquidity',
         args: [params.pairId, params.baseAmount, params.quoteAmount],
@@ -147,7 +147,7 @@ export function useLiquidity() {
   const removeLiquidity = useCallback(
     async (pairId: `0x${string}`, lpTokens: bigint) => {
       writeContract({
-        address: DEX_CORE_ADDRESS,
+        address: DEX_CORE_ADDRESS as `0x${string}`,
         abi: DEX_CORE_ABI,
         functionName: 'removeLiquidity',
         args: [pairId, lpTokens],

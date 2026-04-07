@@ -28,40 +28,40 @@ export function PriceChart() {
         <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0} />
+              <stop offset="5%" stopColor="#F0B90B" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="#F0B90B" stopOpacity={0} />
             </linearGradient>
           </defs>
           <XAxis
             dataKey="time"
             axisLine={false}
             tickLine={false}
-            tick={{ fontSize: 10, fill: '#6b7280' }}
+            tick={{ fontSize: 10, fill: '#848E9C' }}
             tickFormatter={(value) => `${value}h`}
           />
           <YAxis
             domain={['dataMin - 20', 'dataMax + 20']}
             axisLine={false}
             tickLine={false}
-            tick={{ fontSize: 10, fill: '#6b7280' }}
+            tick={{ fontSize: 10, fill: '#848E9C' }}
             tickFormatter={(value) => `$${value}`}
             width={60}
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: '#1e293b',
-              border: 'none',
+              backgroundColor: '#1E2026',
+              border: '1px solid #2A2E39',
               borderRadius: '8px',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
             }}
-            labelStyle={{ color: '#9ca3af', fontSize: 12 }}
-            itemStyle={{ color: '#fff', fontSize: 14 }}
+            labelStyle={{ color: '#848E9C', fontSize: 12 }}
+            itemStyle={{ color: '#EAECEF', fontSize: 14 }}
             formatter={(value: number) => [`$${value.toFixed(2)}`, 'Price']}
           />
           <Area
             type="monotone"
             dataKey="price"
-            stroke="#0ea5e9"
+            stroke="#F0B90B"
             strokeWidth={2}
             fill="url(#colorPrice)"
           />

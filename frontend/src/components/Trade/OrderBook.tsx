@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react'
-import { formatEther } from 'viem'
 
 interface OrderBookProps {
   bids: Array<{ price: bigint; quantity: bigint }>
@@ -32,38 +31,38 @@ export function OrderBook({ bids, asks }: OrderBookProps) {
   )
 
   return (
-    <div className="bg-dark-300 rounded-lg p-4">
-      <h3 className="text-sm font-semibold text-gray-400 mb-3">Order Book</h3>
+    <div>
+      <h3 className="text-sm font-semibold text-binance-text-muted mb-3">Order Book</h3>
       
       {/* Header */}
-      <div className="grid grid-cols-3 text-xs text-gray-500 mb-2">
+      <div className="grid grid-cols-3 text-xs text-binance-text-muted mb-2 px-1">
         <span>Price (USD)</span>
         <span className="text-right">Amount (ETH)</span>
         <span className="text-right">Total</span>
       </div>
 
       {/* Asks (Sells) - Reversed order */}
-      <div className="space-y-0.5 mb-2">
+      <div className="space-y-0.5 mb-1">
         {[...mockAsks].reverse().map((ask, i) => (
           <div key={`ask-${i}`} className="relative">
             <div
-              className="absolute right-0 h-full bg-red-500/10"
+              className="absolute right-0 h-full bg-sell/10"
               style={{ width: `${(ask.total / maxTotal) * 100}%` }}
             />
-            <div className="relative grid grid-cols-3 text-xs py-0.5">
-              <span className="text-red-500">{ask.price.toFixed(2)}</span>
-              <span className="text-right text-gray-300">{ask.quantity}</span>
-              <span className="text-right text-gray-500">{ask.total.toFixed(2)}</span>
+            <div className="relative grid grid-cols-3 text-xs py-0.5 px-1">
+              <span className="text-sell">{ask.price.toFixed(2)}</span>
+              <span className="text-right text-binance-text">{ask.quantity}</span>
+              <span className="text-right text-binance-text-muted">{ask.total.toFixed(2)}</span>
             </div>
           </div>
         ))}
       </div>
 
       {/* Spread */}
-      <div className="border-y border-dark-100 py-2 my-2">
+      <div className="border-y border-binance-border py-2 my-2">
         <div className="text-center">
-          <span className="text-lg font-bold text-white">1,850.42</span>
-          <span className="text-xs text-gray-500 ml-2">Spread: $0.38</span>
+          <span className="text-lg font-bold text-binance-text">1,850.42</span>
+          <span className="text-xs text-binance-text-muted ml-2">Spread: $0.38</span>
         </div>
       </div>
 
@@ -72,13 +71,13 @@ export function OrderBook({ bids, asks }: OrderBookProps) {
         {mockBids.map((bid, i) => (
           <div key={`bid-${i}`} className="relative">
             <div
-              className="absolute right-0 h-full bg-green-500/10"
+              className="absolute right-0 h-full bg-buy/10"
               style={{ width: `${(bid.total / maxTotal) * 100}%` }}
             />
-            <div className="relative grid grid-cols-3 text-xs py-0.5">
-              <span className="text-green-500">{bid.price.toFixed(2)}</span>
-              <span className="text-right text-gray-300">{bid.quantity}</span>
-              <span className="text-right text-gray-500">{bid.total.toFixed(2)}</span>
+            <div className="relative grid grid-cols-3 text-xs py-0.5 px-1">
+              <span className="text-buy">{bid.price.toFixed(2)}</span>
+              <span className="text-right text-binance-text">{bid.quantity}</span>
+              <span className="text-right text-binance-text-muted">{bid.total.toFixed(2)}</span>
             </div>
           </div>
         ))}

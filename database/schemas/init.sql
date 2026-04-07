@@ -1,174 +1,121 @@
-import { Pool } from 'pg'
-import Redis from 'ioredis'
-import { logger } from '../utils/logger'
+-- Users table
+CREATE TABLE IF NOT EXISTS users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  address VARCHAR(42) UNIQUE NOT NULL,
+  username VARCHAR(100),
+  email VARCHAR(255),
+  referrer_id UUID REFERENCES users(id),
+  referral_code VARCHAR(64) UNIQUE,
+  total_volume DECIMAL(30, 0) DEFAULT 0,
+  total_fees DECIMAL(30, 0) DEFAULT 0,
+  referral_earnings DECIMAL(30, 0) DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-// PostgreSQL connection pool
-export const pool = new Pool({
-  host: process.env.PG_HOST || 'localhost',
-  port: parseInt(process.env.PG_PORT || '5432'),
-  database: process.env.PG_DATABASE || 'web3_dex',
-  user: process.env.PG_USER || 'postgres',
-  password: process.env.PG_PASSWORD || 'password',
-  max: 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
-})
+-- Trading pairs table
+CREATE TABLE IF NOT EXISTS trading_pairs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  pair_id VARCHAR(66) UNIQUE NOT NULL,
+  base_token VARCHAR(42) NOT NULL,
+  quote_token VARCHAR(42) NOT NULL,
+  base_symbol VARCHAR(20) NOT NULL,
+  quote_symbol VARCHAR(20) NOT NULL,
+  maker_fee DECIMAL(10, 4) DEFAULT 0.0005,
+  taker_fee DECIMAL(10, 4) DEFAULT 0.001,
+  min_order_size DECIMAL(30, 0) DEFAULT 1000000000000000,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-pool.on('error', (err) => {
-  logger.error('PostgreSQL pool error:', err)
-})
+-- Orders table
+CREATE TABLE IF NOT EXISTS orders (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  order_id BIGSERIAL,
+  user_id UUID REFERENCES users(id),
+  pair_id VARCHAR(66) REFERENCES trading_pairs(pair_id),
+  direction VARCHAR(4) NOT NULL CHECK (direction IN ('BUY', 'SELL')),
+  order_type VARCHAR(10) NOT NULL CHECK (order_type IN ('MARKET', 'LIMIT')),
+  price DECIMAL(30, 0),
+  quantity DECIMAL(30, 0) NOT NULL,
+  filled_quantity DECIMAL(30, 0) DEFAULT 0,
+  status VARCHAR(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'FILLED', 'PARTIALLY_FILLED', 'CANCELLED', 'EXPIRED')),
+  expires_at TIMESTAMP,
+  tx_hash VARCHAR(66),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-// Redis connection
-export const redis = new Redis({
-  host: process.env.REDIS_HOST || 'localhost',
-  port: parseInt(process.env.REDIS_PORT || '6379'),
-  password: process.env.REDIS_PASSWORD,
-  retryStrategy: (times) => {
-    const delay = Math.min(times * 50, 2000)
-    return delay
-  },
-})
+-- Liquidity pools table
+CREATE TABLE IF NOT EXISTS liquidity_pools (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  pair_id VARCHAR(66) REFERENCES trading_pairs(pair_id),
+  base_reserve DECIMAL(30, 0) DEFAULT 0,
+  quote_reserve DECIMAL(30, 0) DEFAULT 0,
+  lp_supply DECIMAL(30, 0) DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(pair_id)
+);
 
-redis.on('error', (err) => {
-  logger.error('Redis error:', err)
-})
+-- LP positions table
+CREATE TABLE IF NOT EXISTS lp_positions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id),
+  pool_id UUID REFERENCES liquidity_pools(id),
+  lp_balance DECIMAL(30, 0) DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(user_id, pool_id)
+);
 
-redis.on('connect', () => {
-  logger.info('Connected to Redis')
-})
+-- Trades (historical) table
+CREATE TABLE IF NOT EXISTS trades (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  order_id UUID REFERENCES orders(id),
+  pair_id VARCHAR(66) REFERENCES trading_pairs(pair_id),
+  direction VARCHAR(4) NOT NULL,
+  price DECIMAL(30, 0) NOT NULL,
+  quantity DECIMAL(30, 0) NOT NULL,
+  fee DECIMAL(30, 0) NOT NULL,
+  maker_user_id UUID REFERENCES users(id),
+  taker_user_id UUID REFERENCES users(id),
+  tx_hash VARCHAR(66),
+  block_number BIGINT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-// Database initialization
-export async function initializeDatabase() {
-  const client = await pool.connect()
-  try {
-    await client.query(`
-      -- Users table
-      CREATE TABLE IF NOT EXISTS users (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        address VARCHAR(42) UNIQUE NOT NULL,
-        username VARCHAR(100),
-        email VARCHAR(255),
-        referrer_id UUID REFERENCES users(id),
-        referral_code VARCHAR(64) UNIQUE,
-        total_volume DECIMAL(30, 0) DEFAULT 0,
-        total_fees DECIMAL(30, 0) DEFAULT 0,
-        referral_earnings DECIMAL(30, 0) DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
+-- Price history for charts
+CREATE TABLE IF NOT EXISTS price_history (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  pair_id VARCHAR(66) REFERENCES trading_pairs(pair_id),
+  open DECIMAL(30, 0) NOT NULL,
+  high DECIMAL(30, 0) NOT NULL,
+  low DECIMAL(30, 0) NOT NULL,
+  close DECIMAL(30, 0) NOT NULL,
+  volume DECIMAL(30, 0) NOT NULL,
+  period VARCHAR(10) NOT NULL,
+  timestamp TIMESTAMP NOT NULL
+);
 
-      -- Trading pairs table
-      CREATE TABLE IF NOT EXISTS trading_pairs (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        pair_id VARCHAR(66) UNIQUE NOT NULL,
-        base_token VARCHAR(42) NOT NULL,
-        quote_token VARCHAR(42) NOT NULL,
-        base_symbol VARCHAR(20) NOT NULL,
-        quote_symbol VARCHAR(20) NOT NULL,
-        maker_fee DECIMAL(10, 4) DEFAULT 0.0005,
-        taker_fee DECIMAL(10, 4) DEFAULT 0.001,
-        min_order_size DECIMAL(30, 0) DEFAULT 1000000000000000,
-        is_active BOOLEAN DEFAULT true,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
+-- Referral earnings table
+CREATE TABLE IF NOT EXISTS referral_earnings (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id),
+  referrer_id UUID REFERENCES users(id),
+  level INTEGER NOT NULL,
+  trade_volume DECIMAL(30, 0) NOT NULL,
+  reward DECIMAL(30, 0) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-      -- Orders table
-      CREATE TABLE IF NOT EXISTS orders (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        order_id BIGSERIAL,
-        user_id UUID REFERENCES users(id),
-        pair_id VARCHAR(66) REFERENCES trading_pairs(pair_id),
-        direction VARCHAR(4) NOT NULL CHECK (direction IN ('BUY', 'SELL')),
-        order_type VARCHAR(10) NOT NULL CHECK (order_type IN ('MARKET', 'LIMIT')),
-        price DECIMAL(30, 0),
-        quantity DECIMAL(30, 0) NOT NULL,
-        filled_quantity DECIMAL(30, 0) DEFAULT 0,
-        status VARCHAR(20) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'FILLED', 'PARTIALLY_FILLED', 'CANCELLED', 'EXPIRED')),
-        expires_at TIMESTAMP,
-        tx_hash VARCHAR(66),
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-
-      -- Liquidity pools table
-      CREATE TABLE IF NOT EXISTS liquidity_pools (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        pair_id VARCHAR(66) REFERENCES trading_pairs(pair_id),
-        base_reserve DECIMAL(30, 0) DEFAULT 0,
-        quote_reserve DECIMAL(30, 0) DEFAULT 0,
-        lp_supply DECIMAL(30, 0) DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE(pair_id)
-      );
-
-      -- LP positions table
-      CREATE TABLE IF NOT EXISTS lp_positions (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        user_id UUID REFERENCES users(id),
-        pool_id UUID REFERENCES liquidity_pools(id),
-        lp_balance DECIMAL(30, 0) DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE(user_id, pool_id)
-      );
-
-      -- Trades (historical) table
-      CREATE TABLE IF NOT EXISTS trades (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        order_id UUID REFERENCES orders(id),
-        pair_id VARCHAR(66) REFERENCES trading_pairs(pair_id),
-        direction VARCHAR(4) NOT NULL,
-        price DECIMAL(30, 0) NOT NULL,
-        quantity DECIMAL(30, 0) NOT NULL,
-        fee DECIMAL(30, 0) NOT NULL,
-        maker_user_id UUID REFERENCES users(id),
-        taker_user_id UUID REFERENCES users(id),
-        tx_hash VARCHAR(66),
-        block_number BIGINT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-
-      -- Price history for charts
-      CREATE TABLE IF NOT EXISTS price_history (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        pair_id VARCHAR(66) REFERENCES trading_pairs(pair_id),
-        open DECIMAL(30, 0) NOT NULL,
-        high DECIMAL(30, 0) NOT NULL,
-        low DECIMAL(30, 0) NOT NULL,
-        close DECIMAL(30, 0) NOT NULL,
-        volume DECIMAL(30, 0) NOT NULL,
-        period VARCHAR(10) NOT NULL,
-        timestamp TIMESTAMP NOT NULL
-      );
-
-      -- Referral earnings table
-      CREATE TABLE IF NOT EXISTS referral_earnings (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        user_id UUID REFERENCES users(id),
-        referrer_id UUID REFERENCES users(id),
-        level INTEGER NOT NULL,
-        trade_volume DECIMAL(30, 0) NOT NULL,
-        reward DECIMAL(30, 0) NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-
-      -- Indexes for performance
-      CREATE INDEX IF NOT EXISTS idx_orders_user_id ON orders(user_id);
-      CREATE INDEX IF NOT EXISTS idx_orders_pair_id ON orders(pair_id);
-      CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
-      CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at DESC);
-      CREATE INDEX IF NOT EXISTS idx_trades_pair_id ON trades(pair_id);
-      CREATE INDEX IF NOT EXISTS idx_trades_created_at ON trades(created_at DESC);
-      CREATE INDEX IF NOT EXISTS idx_price_history_pair_timestamp ON price_history(pair_id, timestamp DESC);
-      CREATE INDEX IF NOT EXISTS idx_users_address ON users(address);
-      CREATE INDEX IF NOT EXISTS idx_users_referrer ON users(referrer_id);
-    `)
-    logger.info('Database initialized successfully')
-  } catch (error) {
-    logger.error('Database initialization failed:', error)
-    throw error
-  } finally {
-    client.release()
-  }
-}
+-- Indexes for performance
+CREATE INDEX IF NOT EXISTS idx_orders_user_id ON orders(user_id);
+CREATE INDEX IF NOT EXISTS idx_orders_pair_id ON orders(pair_id);
+CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
+CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_trades_pair_id ON trades(pair_id);
+CREATE INDEX IF NOT EXISTS idx_trades_created_at ON trades(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_price_history_pair_timestamp ON price_history(pair_id, timestamp DESC);
+CREATE INDEX IF NOT EXISTS idx_users_address ON users(address);
+CREATE INDEX IF NOT EXISTS idx_users_referrer ON users(referrer_id);

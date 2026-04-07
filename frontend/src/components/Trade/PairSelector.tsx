@@ -39,38 +39,38 @@ export function PairSelector() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-3 px-4 py-2 bg-dark-300 rounded-lg hover:bg-dark-200 transition-colors"
+        className="flex items-center gap-3 px-4 py-2 bg-binance-card rounded-lg border border-binance-border hover:border-binance-gold/30 transition-colors"
       >
         <div className="flex items-center gap-2">
-          <span className="text-lg font-bold text-white">
+          <span className="text-lg font-bold text-binance-text">
             {activePair?.baseSymbol || 'ETH'}/{activePair?.quoteSymbol || 'USDT'}
           </span>
           <span
             className={`text-sm font-medium ${
-              (activePair?.change24h || 0) >= 0 ? 'text-green-500' : 'text-red-500'
+              (activePair?.change24h || 0) >= 0 ? 'text-buy' : 'text-sell'
             }`}
           >
             {(activePair?.change24h || 0) >= 0 ? '+' : ''}
             {(activePair?.change24h || 0).toFixed(2)}%
           </span>
         </div>
-        <ChevronDownIcon className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDownIcon className={`w-4 h-4 text-binance-text-muted transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute top-full left-0 mt-2 w-80 bg-dark-300 rounded-lg shadow-xl z-50 border border-dark-100">
+          <div className="absolute top-full left-0 mt-2 w-80 bg-binance-card rounded-lg shadow-xl z-50 border border-binance-border">
             {/* Search */}
-            <div className="p-3 border-b border-dark-100">
+            <div className="p-3 border-b border-binance-border">
               <div className="relative">
-                <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-binance-text-muted" />
                 <input
                   type="text"
                   placeholder="Search pairs..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-dark-200 rounded text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                  className="w-full pl-10 pr-4 py-2 bg-binance-border rounded text-binance-text text-sm placeholder-binance-text-muted focus:outline-none focus:ring-1 focus:ring-binance-gold"
                 />
               </div>
             </div>
@@ -78,7 +78,7 @@ export function PairSelector() {
             {/* Favorites */}
             {favoritePairs.length > 0 && (
               <div className="p-2">
-                <p className="text-xs text-gray-500 px-2 py-1">Favorites</p>
+                <p className="text-xs text-binance-text-muted px-2 py-1">Favorites</p>
                 {favoritePairs.map((pair) => (
                   <PairRow
                     key={pair.id}
@@ -96,8 +96,8 @@ export function PairSelector() {
             )}
 
             {/* All Pairs */}
-            <div className="p-2 border-t border-dark-100">
-              <p className="text-xs text-gray-500 px-2 py-1">All Pairs</p>
+            <div className="p-2 border-t border-binance-border">
+              <p className="text-xs text-binance-text-muted px-2 py-1">All Pairs</p>
               {otherPairs.map((pair) => (
                 <PairRow
                   key={pair.id}
@@ -131,8 +131,8 @@ function PairRow({ pair, isActive, isFavorite, onSelect, onToggleFavorite }: Pai
   return (
     <div
       onClick={onSelect}
-      className={`flex items-center justify-between px-3 py-2 rounded cursor-pointer hover:bg-dark-200 ${
-        isActive ? 'bg-primary-500/10' : ''
+      className={`flex items-center justify-between px-3 py-2 rounded cursor-pointer hover:bg-binance-border/50 transition-colors ${
+        isActive ? 'bg-binance-gold/10' : ''
       }`}
     >
       <div className="flex items-center gap-3">
@@ -141,19 +141,19 @@ function PairRow({ pair, isActive, isFavorite, onSelect, onToggleFavorite }: Pai
             e.stopPropagation()
             onToggleFavorite()
           }}
-          className="text-gray-500 hover:text-yellow-500"
+          className="text-binance-text-muted hover:text-binance-gold transition-colors"
         >
-          <StarIcon className={`w-4 h-4 ${isFavorite ? 'fill-yellow-500 text-yellow-500' : ''}`} />
+          <StarIcon className={`w-4 h-4 ${isFavorite ? 'fill-binance-gold text-binance-gold' : ''}`} />
         </button>
         <div>
-          <span className="font-medium text-white">
+          <span className="font-medium text-binance-text">
             {pair.baseSymbol}/{pair.quoteSymbol}
           </span>
         </div>
       </div>
       <div className="text-right">
-        <p className="text-sm text-white">${pair.price.toLocaleString()}</p>
-        <p className={`text-xs ${pair.change24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+        <p className="text-sm text-binance-text">${pair.price.toLocaleString()}</p>
+        <p className={`text-xs ${pair.change24h >= 0 ? 'text-buy' : 'text-sell'}`}>
           {pair.change24h >= 0 ? '+' : ''}{pair.change24h.toFixed(2)}%
         </p>
       </div>

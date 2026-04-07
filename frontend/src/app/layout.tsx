@@ -1,6 +1,9 @@
 import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
 import { Providers } from './providers'
 import './globals.css'
+
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Web3 DEX - Decentralized Exchange',
@@ -17,7 +20,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className="bg-dark-400 text-white min-h-screen">
+      <body className={`bg-binance-bg text-binance-text min-h-screen antialiased ${inter.className}`}>
         <Providers>{children}</Providers>
       </body>
     </html>
