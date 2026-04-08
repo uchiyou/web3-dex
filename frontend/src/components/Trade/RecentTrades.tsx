@@ -17,27 +17,24 @@ interface RecentTradesProps {
 export function RecentTrades({ trades }: RecentTradesProps) {
   return (
     <div>
-      <h3 className="text-sm font-semibold text-binance-text-muted mb-3">Recent Trades</h3>
-      
-      {/* Header */}
-      <div className="grid grid-cols-3 text-xs text-binance-text-muted mb-2 px-1">
+      <div className="trade-panel-header">
+        <span className="trade-panel-title">Recent Trades</span>
+      </div>
+
+      <div className="rt-header">
         <span>Price (USD)</span>
         <span className="text-right">Amount</span>
         <span className="text-right">Time</span>
       </div>
 
-      {/* Trades */}
-      <div className="space-y-0.5 max-h-48 overflow-y-auto">
+      <div className="overflow-y-auto" style={{ maxHeight: '220px' }}>
         {trades.map((trade) => (
-          <div
-            key={trade.id}
-            className="grid grid-cols-3 text-xs py-1 px-1 hover:bg-binance-border/50 rounded transition-colors"
-          >
-            <span className={trade.side === 'buy' ? 'text-buy' : 'text-sell'}>
+          <div key={trade.id} className="rt-row">
+            <span className={`rt-price ${trade.side}`}>
               {trade.price.toFixed(2)}
             </span>
-            <span className="text-right text-binance-text">{trade.quantity}</span>
-            <span className="text-right text-binance-text-muted">{trade.time}</span>
+            <span className="rt-amount">{trade.quantity}</span>
+            <span className="rt-time">{trade.time}</span>
           </div>
         ))}
       </div>

@@ -11,8 +11,8 @@ export function Card({ children, className, onClick }: CardProps) {
   return (
     <div
       className={clsx(
-        'bg-binance-card rounded-lg border border-binance-border',
-        onClick && 'cursor-pointer hover:border-binance-border/80 transition-colors',
+        'trade-panel',
+        onClick && 'cursor-pointer transition-all',
         className
       )}
       onClick={onClick}

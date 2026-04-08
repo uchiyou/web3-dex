@@ -1,97 +1,133 @@
-/* Alipay Design System */
+/* ================================================
+   Web3 DEX - Modern Fintech Design System
+   Base: Alipay Blue (#1677FF) + Clean Professional UI
+   ================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 :root {
+  /* Brand Colors */
+  --blue: #1677FF;
+  --blue-hover: #4096FF;
+  --blue-active: #0958D9;
+  --blue-light: #E6F4FF;
+  --blue-dark: #003EB3;
+
+  /* Backgrounds */
   --bg-primary: #F0F2F5;
   --bg-white: #FFFFFF;
   --bg-card: #FFFFFF;
-  --blue: #1677FF;
-  --blue-hover: #4096FF;
-  --blue-light: #E6F4FF;
-  --blue-dark: #0958D9;
+  --bg-hover: #F5F7FA;
+  --bg-input: #FAFAFA;
+
+  /* Trading Colors */
   --green: #52C41A;
   --green-light: #F6FFED;
-  --orange: #FF6A00;
-  --orange-light: #FFF7E6;
+  --green-hover: #73D13D;
   --red: #FF4D4F;
   --red-light: #FFF1F0;
+  --red-hover: #FF7875;
+  --orange: #FF6A00;
+  --orange-light: #FFF7E6;
+
+  /* Text */
   --text-primary: #111111;
   --text-secondary: #666666;
   --text-muted: #999999;
+  --text-disabled: #BFBFBF;
+
+  /* Borders */
   --border-color: #E8E8E8;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-  --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+  --border-hover: #D9D9D9;
+  --border-focus: var(--blue);
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
+  --shadow-blue: 0 4px 16px rgba(22,119,255,0.25);
+
+  /* Radius */
+  --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
+  --radius-xl: 20px;
   --radius-full: 9999px;
+
+  /* Spacing scale (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* ===================== RESET ===================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: var(--bg-primary);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
   line-height: 1.5;
+  font-size: 14px;
 }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #D9D9D9; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #BFBFBF; }
 
-/* Layout */
-.container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+/* ===================== LAYOUT ===================== */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+@media (min-width: 640px) { .container { padding: 0 20px; } }
+
 .flex { display: flex; }
 .flex-col { flex-direction: column; }
 .items-center { align-items: center; }
 .items-start { align-items: flex-start; }
+.items-end { align-items: flex-end; }
 .justify-between { justify-content: space-between; }
 .justify-center { justify-content: center; }
 .justify-end { justify-content: flex-end; }
-.gap-1 { gap: 0.25rem; }
-.gap-2 { gap: 0.5rem; }
-.gap-3 { gap: 0.75rem; }
-.gap-4 { gap: 1rem; }
-.gap-6 { gap: 1.5rem; }
+.flex-1 { flex: 1; }
+.flex-shrink-0 { flex-shrink: 0; }
+.flex-wrap { flex-wrap: wrap; }
+.inline-flex { display: inline-flex; }
+.inline-block { display: inline-block; }
 .grid { display: grid; }
+.grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
 .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
 .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
-.grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+.grid-cols-12 { grid-template-columns: repeat(12, 1fr); }
 
-/* Typography */
-.text-xs { font-size: 12px; line-height: 1.5; }
-.text-sm { font-size: 14px; line-height: 1.5; }
-.text-base { font-size: 16px; line-height: 1.5; }
-.text-lg { font-size: 18px; line-height: 1.6; }
-.text-xl { font-size: 20px; line-height: 1.6; }
-.text-2xl { font-size: 24px; line-height: 1.4; }
-.text-3xl { font-size: 28px; line-height: 1.3; }
-.text-4xl { font-size: 32px; line-height: 1.2; }
-.font-medium { font-weight: 500; }
-.font-semibold { font-weight: 600; }
-.font-bold { font-weight: 700; }
-.text-center { text-align: center; }
-.leading-tight { line-height: 1.25; }
-
-/* Spacing */
+/* ===================== SPACING ===================== */
+.gap-1 { gap: 4px; }
+.gap-2 { gap: 8px; }
+.gap-3 { gap: 12px; }
+.gap-4 { gap: 16px; }
+.gap-6 { gap: 24px; }
 .mb-1 { margin-bottom: 4px; }
 .mb-2 { margin-bottom: 8px; }
 .mb-3 { margin-bottom: 12px; }
 .mb-4 { margin-bottom: 16px; }
 .mb-6 { margin-bottom: 24px; }
 .mb-8 { margin-bottom: 32px; }
-.mb-10 { margin-bottom: 40px; }
-.mb-12 { margin-bottom: 48px; }
+.mt-1 { margin-top: 4px; }
 .mt-2 { margin-top: 8px; }
+.mt-3 { margin-top: 12px; }
 .mt-4 { margin-top: 16px; }
 .mt-6 { margin-top: 24px; }
-.mt-8 { margin-top: 32px; }
-.mt-12 { margin-top: 48px; }
 .ml-2 { margin-left: 8px; }
 .ml-3 { margin-left: 12px; }
 .mr-2 { margin-right: 8px; }
@@ -101,164 +137,175 @@ html, body {
 .py-4 { padding-top: 16px; padding-bottom: 16px; }
 .py-6 { padding-top: 24px; padding-bottom: 24px; }
 .py-8 { padding-top: 32px; padding-bottom: 32px; }
-.py-12 { padding-top: 48px; padding-bottom: 48px; }
+.px-2 { padding-left: 8px; padding-right: 8px; }
 .px-3 { padding-left: 12px; padding-right: 12px; }
 .px-4 { padding-left: 16px; padding-right: 16px; }
-.px-6 { padding-left: 24px; padding-right: 24px; }
+.p-2 { padding: 8px; }
 .p-3 { padding: 12px; }
 .p-4 { padding: 16px; }
 .p-6 { padding: 24px; }
 .p-8 { padding: 32px; }
 
-/* Borders */
-.border-b { border-bottom: 1px solid var(--border-color); }
-.border { border: 1px solid var(--border-color); }
-.rounded { border-radius: var(--radius-sm); }
-.rounded-lg { border-radius: var(--radius-md); }
-.rounded-xl { border-radius: var(--radius-lg); }
-.rounded-full { border-radius: var(--radius-full); }
+/* ===================== TYPOGRAPHY ===================== */
+.text-xs { font-size: 11px; line-height: 1.5; }
+.text-sm { font-size: 13px; line-height: 1.5; }
+.text-base { font-size: 14px; line-height: 1.5; }
+.text-lg { font-size: 16px; line-height: 1.6; }
+.text-xl { font-size: 18px; line-height: 1.6; }
+.text-2xl { font-size: 20px; line-height: 1.4; }
+.text-3xl { font-size: 24px; line-height: 1.3; }
+.text-4xl { font-size: 28px; line-height: 1.2; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.leading-tight { line-height: 1.25; }
+.leading-none { line-height: 1; }
+.tracking-tight { letter-spacing: -0.02em; }
+.uppercase { text-transform: uppercase; }
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* Sizing */
+/* ===================== SIZING ===================== */
 .w-full { width: 100%; }
 .w-auto { width: auto; }
 .h-full { height: 100%; }
 .min-h-screen { min-height: 100vh; }
+.max-w-md { max-width: 448px; }
+.max-w-lg { max-width: 512px; }
+.max-w-xl { max-width: 576px; }
 .max-w-2xl { max-width: 672px; }
-.max-w-3xl { max-width: 768px; }
 .max-w-4xl { max-width: 896px; }
+.max-w-7xl { max-width: 1280px; }
 .mx-auto { margin-left: auto; margin-right: auto; }
 .overflow-hidden { overflow: hidden; }
+.overflow-y-auto { overflow-y: auto; }
 .relative { position: relative; }
 .absolute { position: absolute; }
 .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
 .z-10 { z-index: 10; }
+.z-40 { z-index: 40; }
 .z-50 { z-index: 50; }
 .cursor-pointer { cursor: pointer; }
 .select-none { user-select: none; }
-.white-space-nowrap { white-space: nowrap; }
 .resize-none { resize: none; }
 .block { display: block; }
-.inline-flex { display: inline-flex; }
-.inline-block { display: inline-block; }
 .hidden { display: none; }
-.flex-1 { flex: 1; }
-.flex-wrap { flex-wrap: wrap; }
-.text-right { text-align: right; }
 .opacity-0 { opacity: 0; }
 .opacity-50 { opacity: 0.5; }
-.opacity-60 { opacity: 0.6; }
-.opacity-80 { opacity: 0.8; }
 .transition-all { transition: all 0.2s ease; }
 .transition-colors { transition: color 0.15s, background-color 0.15s, border-color 0.15s; }
-.tracking-tight { letter-spacing: -0.02em; }
 
-/* Colors */
+/* ===================== BORDERS ===================== */
+.border-b { border-bottom: 1px solid var(--border-color); }
+.border-t { border-top: 1px solid var(--border-color); }
+.border { border: 1px solid var(--border-color); }
+.rounded { border-radius: var(--radius-sm); }
+.rounded-sm { border-radius: var(--radius-xs); }
+.rounded-lg { border-radius: var(--radius-md); }
+.rounded-xl { border-radius: var(--radius-lg); }
+.rounded-full { border-radius: var(--radius-full); }
+
+/* ===================== COLORS ===================== */
 .bg-white { background-color: var(--bg-white); }
 .bg-primary { background-color: var(--bg-primary); }
 .bg-blue { background-color: var(--blue); }
 .bg-blue-light { background-color: var(--blue-light); }
 .bg-green-light { background-color: var(--green-light); }
-.bg-orange-light { background-color: var(--orange-light); }
 .bg-red-light { background-color: var(--red-light); }
+.bg-orange-light { background-color: var(--orange-light); }
 .text-blue { color: var(--blue); }
 .text-green { color: var(--green); }
-.text-orange { color: var(--orange); }
 .text-red { color: var(--red); }
+.text-orange { color: var(--orange); }
 .text-primary { color: var(--text-primary); }
 .text-secondary { color: var(--text-secondary); }
 .text-muted { color: var(--text-muted); }
+.text-white { color: #FFFFFF; }
+.text-disabled { color: var(--text-disabled); }
 .border-color { border-color: var(--border-color); }
 .border-blue { border-color: var(--blue); }
 
-/* Hover states */
-.hover\:bg-blue-hover:hover { background-color: var(--blue-hover); }
-.hover\:bg-gray-100:hover { background-color: #F5F5F5; }
-.hover\:text-blue:hover { color: var(--blue); }
-.hover\:text-blue-hover:hover { color: var(--blue-hover); }
-.hover\:shadow-md:hover { box-shadow: var(--shadow-md); }
-.hover\:border-blue:hover { border-color: var(--blue); }
-
-/* Shadows */
+/* ===================== SHADOWS ===================== */
+.shadow-xs { box-shadow: var(--shadow-xs); }
 .shadow-sm { box-shadow: var(--shadow-sm); }
 .shadow { box-shadow: var(--shadow-md); }
 .shadow-lg { box-shadow: var(--shadow-lg); }
 
-/* Alipay Components */
+/* ===================== HEADER ===================== */
 .alipay-header {
   background: var(--bg-white);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  box-shadow: var(--shadow-xs);
   position: sticky;
   top: 0;
   z-index: 100;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .alipay-logo {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   text-decoration: none;
 }
 
 .alipay-logo-icon {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   background: linear-gradient(135deg, var(--blue) 0%, #52C41A 100%);
-  border-radius: 8px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-weight: 700;
-  font-size: 18px;
+  font-size: 16px;
+  letter-spacing: -0.5px;
 }
 
 .alipay-logo-text {
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 700;
   color: var(--text-primary);
+  letter-spacing: -0.3px;
 }
 
-.alipay-logo-text span {
-  color: var(--blue);
-}
+.alipay-logo-text span { color: var(--blue); }
 
 .alipay-nav {
   display: flex;
-  gap: 32px;
+  gap: 8px;
 }
 
 .alipay-nav-link {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--text-secondary);
   text-decoration: none;
-  padding: 12px 0;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
   position: relative;
-  transition: color 0.2s;
+  transition: all 0.15s;
 }
 
-.alipay-nav-link:hover,
+.alipay-nav-link:hover {
+  color: var(--blue);
+  background: var(--blue-light);
+}
+
 .alipay-nav-link.active {
   color: var(--blue);
+  background: var(--blue-light);
+  font-weight: 600;
 }
 
-.alipay-nav-link.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--blue);
-  border-radius: 1px;
-}
-
+/* ===================== BUTTONS ===================== */
 .alipay-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 8px 20px;
+  padding: 9px 20px;
   border-radius: var(--radius-md);
   font-size: 14px;
   font-weight: 600;
@@ -266,16 +313,23 @@ html, body {
   transition: all 0.2s;
   border: none;
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .alipay-btn-primary {
   background: var(--blue);
   color: white;
+  box-shadow: 0 2px 0 rgba(9, 88, 217, 0.2);
 }
 
 .alipay-btn-primary:hover {
   background: var(--blue-hover);
-  box-shadow: 0 4px 12px rgba(22, 119, 255, 0.3);
+  box-shadow: var(--shadow-blue);
+}
+
+.alipay-btn-primary:active {
+  background: var(--blue-active);
+  transform: translateY(1px);
 }
 
 .alipay-btn-secondary {
@@ -287,216 +341,20 @@ html, body {
 .alipay-btn-secondary:hover {
   border-color: var(--blue);
   color: var(--blue);
+  background: var(--blue-light);
 }
 
 .alipay-btn-lg {
   padding: 12px 32px;
-  font-size: 16px;
+  font-size: 15px;
   border-radius: var(--radius-lg);
 }
 
-.alipay-card {
-  background: var(--bg-white);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid rgba(0,0,0,0.04);
-  overflow: hidden;
-}
-
-.alipay-card-hover:hover {
-  box-shadow: var(--shadow-md);
-  border-color: var(--blue);
-}
-
-.alipay-stat-card {
-  background: var(--bg-white);
-  border-radius: var(--radius-lg);
-  padding: 20px;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid rgba(0,0,0,0.04);
-  text-align: center;
-}
-
-.alipay-stat-value {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--text-primary);
-  line-height: 1.2;
-}
-
-.alipay-stat-label {
-  font-size: 13px;
-  color: var(--text-muted);
-  margin-top: 4px;
-}
-
-.alipay-stat-change {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  font-size: 12px;
-  font-weight: 500;
-  margin-top: 6px;
-  padding: 2px 6px;
-  border-radius: 4px;
-}
-
-.alipay-stat-change.up {
-  color: var(--green);
-  background: var(--green-light);
-}
-
-.alipay-stat-change.down {
-  color: var(--red);
-  background: var(--red-light);
-}
-
-.alipay-feature-card {
-  background: var(--bg-white);
-  border-radius: var(--radius-lg);
-  padding: 24px;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid rgba(0,0,0,0.04);
-  transition: all 0.2s;
-  cursor: pointer;
-}
-
-.alipay-feature-card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
-}
-
-.alipay-feature-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 16px;
-}
-
-.alipay-feature-icon.blue { background: var(--blue-light); color: var(--blue); }
-.alipay-feature-icon.green { background: var(--green-light); color: var(--green); }
-.alipay-feature-icon.orange { background: var(--orange-light); color: var(--orange); }
-.alipay-feature-icon.red { background: var(--red-light); color: var(--red); }
-
-.alipay-feature-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 6px;
-}
-
-.alipay-feature-desc {
-  font-size: 13px;
-  color: var(--text-muted);
-  line-height: 1.6;
-}
-
-.alipay-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-  font-size: 12px;
-  font-weight: 500;
-  background: var(--blue-light);
-  color: var(--blue);
-}
-
-.alipay-badge-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--blue);
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-/* Hero Section */
-.alipay-hero {
-  background: linear-gradient(135deg, #E6F4FF 0%, #F6FFED 50%, #FFF7E6 100%);
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-  padding: 60px 0 80px;
-  margin-bottom: 40px;
-}
-
-.alipay-hero-title {
-  font-size: 36px;
-  font-weight: 700;
-  color: var(--text-primary);
-  line-height: 1.3;
-  margin-bottom: 16px;
-}
-
-.alipay-hero-title span {
-  color: var(--blue);
-}
-
-.alipay-hero-desc {
-  font-size: 16px;
-  color: var(--text-secondary);
-  max-width: 560px;
-  margin: 0 auto 32px;
-  line-height: 1.8;
-}
-
-/* Mobile Menu */
-.alipay-mobile-menu {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--bg-white);
-  z-index: 200;
-  padding: 16px;
-}
-
-.alipay-mobile-menu-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border-color);
-  margin-bottom: 16px;
-}
-
-.alipay-mobile-menu a {
-  display: block;
-  padding: 14px 0;
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--text-primary);
-  text-decoration: none;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.alipay-mobile-menu a:hover {
-  color: var(--blue);
-}
-
-/* Trade page */
-.alipay-trade-layout {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-  height: calc(100vh - 64px);
-  padding: 16px;
-}
-
-/* Wallet button */
 .alipay-wallet-btn {
   background: var(--bg-white);
   border: 1px solid var(--border-color);
   color: var(--blue);
-  padding: 8px 16px;
+  padding: 8px 18px;
   border-radius: var(--radius-md);
   font-size: 14px;
   font-weight: 600;
@@ -510,44 +368,690 @@ html, body {
 .alipay-wallet-btn:hover {
   border-color: var(--blue);
   box-shadow: 0 2px 8px rgba(22, 119, 255, 0.15);
+  background: var(--blue-light);
 }
 
-/* Tab buttons */
-.alipay-tab-btn {
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  border-radius: var(--radius-md);
+/* ===================== CARDS ===================== */
+.alipay-card {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  border: 1px solid rgba(0,0,0,0.04);
+  overflow: hidden;
+}
+
+.alipay-card-hover {
   transition: all 0.2s;
+  cursor: pointer;
 }
 
-.alipay-tab-btn:hover {
-  color: var(--blue);
+.alipay-card-hover:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--blue);
+  transform: translateY(-1px);
+}
+
+.alipay-stat-card {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  padding: 18px 16px;
+  box-shadow: var(--shadow-xs);
+  border: 1px solid rgba(0,0,0,0.04);
+  text-align: center;
+}
+
+.alipay-stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+}
+
+.alipay-stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.alipay-stat-change {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 6px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.alipay-stat-change.up {
+  color: var(--green);
+  background: var(--green-light);
+}
+
+.alipay-stat-change.down {
+  color: var(--red);
+  background: var(--red-light);
+}
+
+/* ===================== FEATURE CARDS ===================== */
+.alipay-feature-card {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-xs);
+  border: 1px solid rgba(0,0,0,0.04);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.alipay-feature-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.alipay-feature-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.alipay-feature-icon.blue { background: var(--blue-light); color: var(--blue); }
+.alipay-feature-icon.green { background: var(--green-light); color: var(--green); }
+.alipay-feature-icon.orange { background: var(--orange-light); color: var(--orange); }
+.alipay-feature-icon.red { background: var(--red-light); color: var(--red); }
+
+.alipay-feature-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.alipay-feature-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* ===================== BADGE ===================== */
+.alipay-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
   background: var(--blue-light);
-}
-
-.alipay-tab-btn.active {
   color: var(--blue);
-  background: var(--blue-light);
+  border: 1px solid rgba(22, 119, 255, 0.15);
 }
 
-/* Order book */
-.alipay-order-book-row {
+.alipay-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--blue);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ===================== HERO ===================== */
+.alipay-hero {
+  background: linear-gradient(135deg, #E6F4FF 0%, #F6FFED 40%, #FFF7E6 70%, #E6F4FF 100%);
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  padding: 40px 0 56px;
+  margin-bottom: 36px;
+  position: relative;
+  overflow: hidden;
+}
+
+.alipay-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 30% 50%, rgba(22,119,255,0.06) 0%, transparent 50%),
+              radial-gradient(circle at 70% 80%, rgba(82,196,26,0.05) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.alipay-hero-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.25;
+  margin-bottom: 14px;
+  letter-spacing: -0.5px;
+}
+
+.alipay-hero-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  max-width: 520px;
+  margin: 0 auto 28px;
+  line-height: 1.8;
+}
+
+/* ===================== MOBILE MENU ===================== */
+.alipay-mobile-menu {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--bg-white);
+  z-index: 200;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.alipay-mobile-menu-header {
   display: flex;
   justify-content: space-between;
-  padding: 6px 12px;
-  font-size: 13px;
-  border-radius: 4px;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 8px;
 }
 
-.alipay-order-book-buy { color: var(--green); }
-.alipay-order-book-sell { color: var(--red); }
+.alipay-mobile-menu a {
+  display: block;
+  padding: 14px 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border-color);
+}
 
-/* Footer */
+.alipay-mobile-menu a:hover { color: var(--blue); }
+
+/* ===================== TRADE PAGE ===================== */
+.trade-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  height: calc(100vh - 64px);
+  padding: 12px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.trade-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Trade Panel (shared card style for trade components) */
+.trade-panel {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  border: 1px solid rgba(0,0,0,0.04);
+  overflow: hidden;
+}
+
+.trade-panel-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.trade-panel-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.trade-panel-body {
+  padding: 12px;
+}
+
+/* Pair Selector */
+.pair-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: var(--bg-white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pair-btn:hover {
+  border-color: var(--blue);
+  background: var(--blue-light);
+}
+
+.pair-symbol {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
+
+.pair-change {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.pair-change.up { color: var(--green); }
+.pair-change.down { color: var(--red); }
+
+/* Pair Dropdown */
+.pair-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 320px;
+  background: var(--bg-white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  z-index: 50;
+  overflow: hidden;
+}
+
+.pair-search {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.pair-search-input {
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.pair-search-input:focus {
+  border-color: var(--blue);
+  background: var(--bg-white);
+}
+
+.pair-section-label {
+  padding: 8px 12px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pair-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  margin: 0 4px;
+  transition: background 0.1s;
+}
+
+.pair-row:hover { background: var(--bg-primary); }
+.pair-row.active { background: var(--blue-light); }
+
+/* Order Book */
+.ob-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ob-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 5px 12px;
+  font-size: 13px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.ob-row:hover { background: var(--bg-primary); }
+
+.ob-bar {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+.ob-bar.bid { background: var(--green); }
+.ob-bar.ask { background: var(--red); }
+
+.ob-price { font-weight: 600; font-variant-numeric: tabular-nums; }
+.ob-price.bid { color: var(--green); }
+.ob-price.ask { color: var(--red); }
+.ob-amount { color: var(--text-primary); text-align: right; font-variant-numeric: tabular-nums; }
+.ob-total { color: var(--text-secondary); text-align: right; font-variant-numeric: tabular-nums; }
+
+.ob-spread {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-primary);
+}
+
+.ob-mid-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ob-spread-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Trade Tabs */
+.trade-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  background: var(--bg-primary);
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+}
+
+.trade-tab {
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: none;
+  text-align: center;
+}
+
+.trade-tab.buy {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.trade-tab.buy.active {
+  background: var(--green);
+  color: white;
+  box-shadow: 0 2px 8px rgba(82, 196, 26, 0.3);
+}
+
+.trade-tab.sell {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.trade-tab.sell.active {
+  background: var(--red);
+  color: white;
+  box-shadow: 0 2px 8px rgba(255, 77, 79, 0.3);
+}
+
+/* Order Type Tabs */
+.order-type-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.order-type-tab {
+  flex: 1;
+  padding: 7px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.order-type-tab.active {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: var(--blue-light);
+}
+
+/* Form */
+.form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  letter-spacing: 0.2px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--text-primary);
+  outline: none;
+  transition: all 0.15s;
+  font-variant-numeric: tabular-nums;
+}
+
+.form-input:focus {
+  border-color: var(--blue);
+  background: var(--bg-white);
+  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.08);
+}
+
+.form-input::placeholder { color: var(--text-disabled); }
+
+/* Percentage Buttons */
+.pct-btns {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.pct-btn {
+  padding: 5px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+
+.pct-btn:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: var(--blue-light);
+}
+
+/* Total Display */
+.total-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: var(--bg-primary);
+  border-radius: var(--radius-sm);
+  margin-bottom: 14px;
+}
+
+.total-label { font-size: 13px; color: var(--text-secondary); }
+.total-value { font-size: 14px; font-weight: 600; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+
+/* Submit Button */
+.btn-submit {
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  letter-spacing: 0.2px;
+}
+
+.btn-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.btn-submit.buy {
+  background: var(--green);
+  color: white;
+  box-shadow: 0 4px 12px rgba(82, 196, 26, 0.25);
+}
+
+.btn-submit.buy:hover:not(:disabled) {
+  background: var(--green-hover);
+  box-shadow: 0 6px 16px rgba(82, 196, 26, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-submit.sell {
+  background: var(--red);
+  color: white;
+  box-shadow: 0 4px 12px rgba(255, 77, 79, 0.25);
+}
+
+.btn-submit.sell:hover:not(:disabled) {
+  background: var(--red-hover);
+  box-shadow: 0 6px 16px rgba(255, 77, 79, 0.35);
+  transform: translateY(-1px);
+}
+
+.fee-note {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* Recent Trades */
+.rt-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.rt-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 6px 12px;
+  font-size: 13px;
+  transition: background 0.1s;
+  border-radius: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.rt-row:hover { background: var(--bg-primary); }
+.rt-price.bid { color: var(--green); font-weight: 600; }
+.rt-price.ask { color: var(--red); font-weight: 600; }
+.rt-amount { color: var(--text-primary); text-align: right; }
+.rt-time { color: var(--text-muted); text-align: right; }
+
+/* Chart */
+.chart-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chart-symbol { font-size: 16px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px; }
+.chart-price { font-size: 24px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.5px; font-variant-numeric: tabular-nums; }
+.chart-change { font-size: 13px; font-weight: 600; }
+.chart-change.up { color: var(--green); }
+.chart-change.down { color: var(--red); }
+
+.chart-timeframes {
+  display: flex;
+  gap: 4px;
+}
+
+.chart-tf-btn {
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.chart-tf-btn:hover { color: var(--blue); background: var(--blue-light); }
+
+.chart-tf-btn.active.chart-tf-btn.active {
+  background: var(--blue);
+  color: white;
+}
+
+.chart-container {
+  height: 280px;
+  width: 100%;
+}
+
 .alipay-footer {
   background: var(--bg-white);
   border-top: 1px solid var(--border-color);
@@ -555,12 +1059,102 @@ html, body {
   margin-top: 60px;
 }
 
-/* Responsive */
+.wallet-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(2px);
+}
+
+.wallet-modal {
+  background: var(--bg-white);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 400px;
+  overflow: hidden;
+}
+
+.wallet-modal-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.wallet-modal-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.wallet-modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: all 0.15s;
+  border: none;
+  background: transparent;
+}
+
+.wallet-modal-close:hover {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.wallet-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  cursor: pointer;
+  transition: background 0.1s;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.wallet-option:last-child { border-bottom: none; }
+.wallet-option:hover { background: var(--bg-primary); }
+
+.wallet-option-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.wallet-option-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.wallet-option-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
 @media (min-width: 640px) {
   .sm\:flex-row { flex-direction: row; }
-  .sm\:w-auto { width: auto; }
   .sm\:block { display: block; }
   .sm\:hidden { display: none; }
+  .sm\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .sm\:w-auto { width: auto; }
 }
 
 @media (min-width: 768px) {
@@ -568,14 +1162,24 @@ html, body {
   .md\:block { display: block; }
   .md\:hidden { display: none; }
   .md\:inline-flex { display: inline-flex; }
+  .md\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .md\:grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .alipay-hero-title { font-size: 36px; }
+  .alipay-hero-desc { font-size: 16px; }
+  .alipay-hero { padding: 56px 0 80px; }
+  .chart-container { height: 320px; }
+  .trade-layout { padding: 16px; gap: 16px; }
 }
 
 @media (min-width: 1024px) {
-  .lg\:text-5xl { font-size: 48px; }
-  .lg\:grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .lg\:col-span-3 { grid-column: span 3 / span 3; }
+  .lg\:col-span-6 { grid-column: span 6 / span 6; }
+  .lg\:col-span-12 { grid-column: span 12 / span 12; }
+  .lg\:block { display: block; }
+  .lg\:hidden { display: none; }
+  .trade-layout { grid-template-columns: 280px 1fr 300px; }
 }
 
 .sticky { position: sticky; }
 .top-0 { top: 0; }
-.flex-shrink-0 { flex-shrink: 0; }
-.tracking-wide { letter-spacing: 0.01em; }
+.sticky-top { position: sticky; top: 12px; }

@@ -35,60 +35,56 @@ export function PairSelector() {
     )
   }
 
+  const active = activePair || MOCK_PAIRS[0]
+  const changeUp = active.change24h >= 0
+
   return (
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-3 px-4 py-2 bg-binance-card rounded-lg border border-binance-border hover:border-binance-gold/30 transition-colors"
+        className="pair-btn"
       >
         <div className="flex items-center gap-2">
-          <span className="text-lg font-bold text-binance-text">
-            {activePair?.baseSymbol || 'ETH'}/{activePair?.quoteSymbol || 'USDT'}
+          <span className="pair-symbol">
+            {active.baseSymbol}/{active.quoteSymbol}
           </span>
-          <span
-            className={`text-sm font-medium ${
-              (activePair?.change24h || 0) >= 0 ? 'text-buy' : 'text-sell'
-            }`}
-          >
-            {(activePair?.change24h || 0) >= 0 ? '+' : ''}
-            {(activePair?.change24h || 0).toFixed(2)}%
+          <span className={`pair-change ${changeUp ? 'up' : 'down'}`}>
+            {changeUp ? '+' : ''}{active.change24h.toFixed(2)}%
           </span>
         </div>
-        <ChevronDownIcon className={`w-4 h-4 text-binance-text-muted transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDownIcon className={`w-4 h-4 text-secondary transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute top-full left-0 mt-2 w-80 bg-binance-card rounded-lg shadow-xl z-50 border border-binance-border">
+          <div className="pair-dropdown">
             {/* Search */}
-            <div className="p-3 border-b border-binance-border">
+            <div className="pair-search">
               <div className="relative">
-                <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-binance-text-muted" />
+                <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
                 <input
                   type="text"
                   placeholder="Search pairs..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-binance-border rounded text-binance-text text-sm placeholder-binance-text-muted focus:outline-none focus:ring-1 focus:ring-binance-gold"
+                  className="pair-search-input"
+                  autoFocus
                 />
               </div>
             </div>
 
             {/* Favorites */}
             {favoritePairs.length > 0 && (
-              <div className="p-2">
-                <p className="text-xs text-binance-text-muted px-2 py-1">Favorites</p>
+              <div>
+                <p className="pair-section-label">Favorites</p>
                 {favoritePairs.map((pair) => (
                   <PairRow
                     key={pair.id}
                     pair={pair}
                     isActive={activePair?.id === pair.id}
                     isFavorite={true}
-                    onSelect={() => {
-                      setActivePair(pair)
-                      setIsOpen(false)
-                    }}
+                    onSelect={() => { setActivePair(pair); setIsOpen(false) }}
                     onToggleFavorite={() => toggleFavorite(pair.id)}
                   />
                 ))}
@@ -96,18 +92,15 @@ export function PairSelector() {
             )}
 
             {/* All Pairs */}
-            <div className="p-2 border-t border-binance-border">
-              <p className="text-xs text-binance-text-muted px-2 py-1">All Pairs</p>
+            <div className="border-t border-color">
+              <p className="pair-section-label">All Pairs</p>
               {otherPairs.map((pair) => (
                 <PairRow
                   key={pair.id}
                   pair={pair}
                   isActive={activePair?.id === pair.id}
                   isFavorite={false}
-                  onSelect={() => {
-                    setActivePair(pair)
-                    setIsOpen(false)
-                  }}
+                  onSelect={() => { setActivePair(pair); setIsOpen(false) }}
                   onToggleFavorite={() => toggleFavorite(pair.id)}
                 />
               ))}
@@ -128,33 +121,27 @@ interface PairRowProps {
 }
 
 function PairRow({ pair, isActive, isFavorite, onSelect, onToggleFavorite }: PairRowProps) {
+  const changeUp = pair.change24h >= 0
   return (
     <div
       onClick={onSelect}
-      className={`flex items-center justify-between px-3 py-2 rounded cursor-pointer hover:bg-binance-border/50 transition-colors ${
-        isActive ? 'bg-binance-gold/10' : ''
-      }`}
+      className={`pair-row ${isActive ? 'active' : ''}`}
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <button
-          onClick={(e) => {
-            e.stopPropagation()
-            onToggleFavorite()
-          }}
-          className="text-binance-text-muted hover:text-binance-gold transition-colors"
+          onClick={(e) => { e.stopPropagation(); onToggleFavorite() }}
+          className="text-muted hover:text-blue transition-colors"
         >
-          <StarIcon className={`w-4 h-4 ${isFavorite ? 'fill-binance-gold text-binance-gold' : ''}`} />
+          <StarIcon className={`w-4 h-4 ${isFavorite ? 'fill-blue text-blue' : ''}`} />
         </button>
-        <div>
-          <span className="font-medium text-binance-text">
-            {pair.baseSymbol}/{pair.quoteSymbol}
-          </span>
-        </div>
+        <span className="font-semibold text-primary text-sm">
+          {pair.baseSymbol}/{pair.quoteSymbol}
+        </span>
       </div>
       <div className="text-right">
-        <p className="text-sm text-binance-text">${pair.price.toLocaleString()}</p>
-        <p className={`text-xs ${pair.change24h >= 0 ? 'text-buy' : 'text-sell'}`}>
-          {pair.change24h >= 0 ? '+' : ''}{pair.change24h.toFixed(2)}%
+        <p className="text-sm text-primary font-medium">${pair.price.toLocaleString()}</p>
+        <p className={`text-xs ${changeUp ? 'text-green' : 'text-red'}`}>
+          {changeUp ? '+' : ''}{pair.change24h.toFixed(2)}%
         </p>
       </div>
     </div>

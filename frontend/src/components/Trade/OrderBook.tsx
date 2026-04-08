@@ -8,7 +8,6 @@ interface OrderBookProps {
 }
 
 export function OrderBook({ bids, asks }: OrderBookProps) {
-  // Use mock data for display
   const mockBids = [
     { price: 1850.20, quantity: 12.5, total: 23127.50 },
     { price: 1850.00, quantity: 8.3, total: 15355.00 },
@@ -32,53 +31,50 @@ export function OrderBook({ bids, asks }: OrderBookProps) {
 
   return (
     <div>
-      <h3 className="text-sm font-semibold text-binance-text-muted mb-3">Order Book</h3>
-      
+      <div className="trade-panel-header">
+        <span className="trade-panel-title">Order Book</span>
+        <span className="text-xs text-muted font-medium">ETH/USDT</span>
+      </div>
+
       {/* Header */}
-      <div className="grid grid-cols-3 text-xs text-binance-text-muted mb-2 px-1">
+      <div className="ob-header">
         <span>Price (USD)</span>
         <span className="text-right">Amount (ETH)</span>
         <span className="text-right">Total</span>
       </div>
 
-      {/* Asks (Sells) - Reversed order */}
-      <div className="space-y-0.5 mb-1">
+      {/* Asks (Sells) */}
+      <div className="space-y-0.5">
         {[...mockAsks].reverse().map((ask, i) => (
-          <div key={`ask-${i}`} className="relative">
+          <div key={`ask-${i}`} className="ob-row">
             <div
-              className="absolute right-0 h-full bg-sell/10"
+              className="ob-bar ask"
               style={{ width: `${(ask.total / maxTotal) * 100}%` }}
             />
-            <div className="relative grid grid-cols-3 text-xs py-0.5 px-1">
-              <span className="text-sell">{ask.price.toFixed(2)}</span>
-              <span className="text-right text-binance-text">{ask.quantity}</span>
-              <span className="text-right text-binance-text-muted">{ask.total.toFixed(2)}</span>
-            </div>
+            <span className="ob-price ask relative z-10">{ask.price.toFixed(2)}</span>
+            <span className="ob-amount relative z-10">{ask.quantity}</span>
+            <span className="ob-total relative z-10">{ask.total.toFixed(2)}</span>
           </div>
         ))}
       </div>
 
       {/* Spread */}
-      <div className="border-y border-binance-border py-2 my-2">
-        <div className="text-center">
-          <span className="text-lg font-bold text-binance-text">1,850.42</span>
-          <span className="text-xs text-binance-text-muted ml-2">Spread: $0.38</span>
-        </div>
+      <div className="ob-spread">
+        <span className="ob-mid-price">1,850.42</span>
+        <span className="ob-spread-label">Spread: $0.38</span>
       </div>
 
       {/* Bids (Buys) */}
       <div className="space-y-0.5">
         {mockBids.map((bid, i) => (
-          <div key={`bid-${i}`} className="relative">
+          <div key={`bid-${i}`} className="ob-row">
             <div
-              className="absolute right-0 h-full bg-buy/10"
+              className="ob-bar bid"
               style={{ width: `${(bid.total / maxTotal) * 100}%` }}
             />
-            <div className="relative grid grid-cols-3 text-xs py-0.5 px-1">
-              <span className="text-buy">{bid.price.toFixed(2)}</span>
-              <span className="text-right text-binance-text">{bid.quantity}</span>
-              <span className="text-right text-binance-text-muted">{bid.total.toFixed(2)}</span>
-            </div>
+            <span className="ob-price bid relative z-10">{bid.price.toFixed(2)}</span>
+            <span className="ob-amount relative z-10">{bid.quantity}</span>
+            <span className="ob-total relative z-10">{bid.total.toFixed(2)}</span>
           </div>
         ))}
       </div>

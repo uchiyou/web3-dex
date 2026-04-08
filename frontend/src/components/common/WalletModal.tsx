@@ -20,52 +20,27 @@ export function WalletModal({ onClose }: WalletModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
-      <div 
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
-      />
-      
-      {/* Modal */}
-      <div className="relative bg-dark-300 rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl border border-dark-100">
-        <div className="text-center mb-6">
-          <h2 className="text-xl font-bold text-white mb-2">Connect Wallet</h2>
-          <p className="text-gray-400 text-sm">
-            Connect your wallet to start trading on Web3 DEX
-          </p>
+    <div className="wallet-modal-overlay">
+      <div className="wallet-modal">
+        <div className="wallet-modal-header">
+          <h2 className="wallet-modal-title">Connect Wallet</h2>
+          <button className="wallet-modal-close" onClick={onClose}>
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
 
-        <div className="space-y-3">
-          <WalletOption
-            name="MetaMask"
-            icon="🦊"
-            description="Connect using MetaMask browser extension"
-            onClick={handleConnect}
-          />
-          <WalletOption
-            name="WalletConnect"
-            icon="💳"
-            description="Scan with your mobile wallet"
-            onClick={handleConnect}
-          />
-          <WalletOption
-            name="Coinbase Wallet"
-            icon="🔐"
-            description="Use Coinbase Wallet"
-            onClick={handleConnect}
-          />
-          <WalletOption
-            name="Ledger"
-            icon="📟"
-            description="Connect your Ledger hardware wallet"
-            onClick={handleConnect}
-          />
+        <div>
+          <WalletOption name="MetaMask" icon="🦊" description="Browser extension wallet" onClick={handleConnect} />
+          <WalletOption name="WalletConnect" icon="💳" description="Mobile wallet connection" onClick={handleConnect} />
+          <WalletOption name="Coinbase Wallet" icon="🔐" description="Coinbase mobile & extension" onClick={handleConnect} />
+          <WalletOption name="Ledger" icon="📟" description="Hardware wallet" onClick={handleConnect} />
         </div>
 
         <button
           onClick={onClose}
-          className="w-full mt-6 py-3 text-gray-400 hover:text-white transition-colors text-sm"
+          className="w-full py-4 text-secondary text-sm font-medium hover:text-primary transition-colors border-t border-color"
         >
           Cancel
         </button>
@@ -85,14 +60,14 @@ function WalletOption({ name, icon, description, onClick }: WalletOptionProps) {
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center gap-4 p-4 bg-dark-200 rounded-xl hover:bg-dark-100 transition-colors group"
+      className="wallet-option w-full text-left"
     >
-      <span className="text-2xl">{icon}</span>
-      <div className="text-left">
-        <p className="font-medium text-white group-hover:text-primary-500 transition-colors">
-          {name}
-        </p>
-        <p className="text-xs text-gray-500">{description}</p>
+      <div className="wallet-option-icon">
+        <span className="text-lg">{icon}</span>
+      </div>
+      <div>
+        <p className="wallet-option-name">{name}</p>
+        <p className="wallet-option-desc">{description}</p>
       </div>
     </button>
   )

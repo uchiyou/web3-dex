@@ -16,18 +16,18 @@ export function Button({
   disabled,
   ...props
 }: ButtonProps) {
-  const baseStyles = 'inline-flex items-center justify-center font-medium rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-binance-bg disabled:opacity-50 disabled:cursor-not-allowed'
-  
+  const baseStyles = 'inline-flex items-center justify-center font-semibold rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
+
   const variants = {
-    primary: 'bg-binance-gold hover:bg-binance-gold/90 text-binance-bg font-semibold focus:ring-binance-gold',
-    secondary: 'bg-binance-border hover:bg-binance-border/80 text-binance-text focus:ring-binance-border',
-    ghost: 'bg-transparent hover:bg-binance-border text-binance-text-muted hover:text-binance-text focus:ring-binance-border',
-    danger: 'bg-sell hover:bg-sell/90 text-white focus:ring-sell',
-    success: 'bg-buy hover:bg-buy/90 text-white focus:ring-buy',
-    buy: 'bg-buy hover:bg-buy/90 text-white focus:ring-buy',
-    sell: 'bg-sell hover:bg-sell/90 text-white focus:ring-sell',
+    primary: 'bg-blue hover:bg-blue-hover text-white focus:ring-blue shadow-sm',
+    secondary: 'bg-white border border-color hover:border-blue hover:bg-blue-light text-primary focus:ring-blue',
+    ghost: 'bg-transparent hover:bg-bg-primary text-secondary hover:text-primary focus:ring-blue',
+    danger: 'bg-red hover:bg-red-hover text-white focus:ring-red shadow-sm',
+    success: 'bg-green hover:bg-green-hover text-white focus:ring-green shadow-sm',
+    buy: 'bg-green hover:bg-green-hover text-white focus:ring-green shadow-sm',
+    sell: 'bg-red hover:bg-red-hover text-white focus:ring-red shadow-sm',
   }
-  
+
   const sizes = {
     sm: 'px-3 py-1.5 text-xs',
     md: 'px-4 py-2 text-sm',

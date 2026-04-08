@@ -17,17 +17,15 @@ export function Input({
   return (
     <div className="w-full">
       {label && (
-        <label className="block text-sm font-medium text-binance-text-muted mb-1">
+        <label className="block text-sm font-semibold text-secondary mb-1.5">
           {label}
         </label>
       )}
       <div className="relative">
         <input
           className={clsx(
-            'w-full px-3 py-2 bg-binance-border border border-binance-border rounded-md text-binance-text placeholder-binance-text-muted',
-            'focus:outline-none focus:ring-2 focus:ring-binance-gold focus:border-transparent',
-            'transition-all duration-200',
-            error && 'border-sell focus:ring-sell',
+            'form-input',
+            error && 'border-red focus:border-red focus:ring-red/20',
             rightElement && 'pr-16',
             className
           )}
@@ -40,7 +38,7 @@ export function Input({
         )}
       </div>
       {error && (
-        <p className="mt-1 text-sm text-sell">{error}</p>
+        <p className="mt-1 text-sm text-red">{error}</p>
       )}
     </div>
   )

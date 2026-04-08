@@ -13,7 +13,7 @@ export default function HomePage() {
         <div className="container flex items-center justify-between py-3">
           {/* Logo */}
           <Link href="/" className="alipay-logo select-none">
-            <div className="alipay-logo-icon">支</div>
+            <div className="alipay-logo-icon">D</div>
             <span className="alipay-logo-text">
               Web3<span>DEX</span>
             </span>
@@ -84,12 +84,12 @@ export default function HomePage() {
             <span>Decentralized Exchange</span>
           </h1>
 
-          <p className="alipay-hero-desc">
+          <p className="alipay-hero-desc mx-auto px-2">
             Experience lightning-fast trades with our hybrid Order Book + AMM model.
             Enjoy the best rates, lowest fees, and seamless cross-chain trading.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center px-4 sm:px-0 w-full sm:w-auto">
             <Link href="/trade" className="alipay-btn alipay-btn-primary alipay-btn-lg">
               Start Trading
             </Link>
@@ -102,7 +102,7 @@ export default function HomePage() {
 
       {/* Stats */}
       <section className="container">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {[
             { label: 'Total Volume', value: '$1.2B+', change: '+12.5%', up: true },
             { label: 'Active Traders', value: '50K+', change: '+8.2%', up: true },
@@ -128,7 +128,7 @@ export default function HomePage() {
           Why Choose Web3 DEX?
         </h2>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
           {FEATURES.map((f, i) => (
             <div key={i} className="alipay-feature-card">
               <div className={`alipay-feature-icon ${f.iconColor}`}>
@@ -148,9 +148,9 @@ export default function HomePage() {
           <p className="text-secondary mb-6 max-w-md mx-auto">
             Connect your wallet and join thousands of traders on the most advanced DeFi platform.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/trade" className="alipay-btn alipay-btn-primary alipay-btn-lg">Start Trading</Link>
-            <Link href="/referral" className="alipay-btn alipay-btn-secondary alipay-btn-lg">Join Referral Program</Link>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center px-4 sm:px-0">
+            <Link href="/trade" className="alipay-btn alipay-btn-primary alipay-btn-lg w-full sm:w-auto text-center">Start Trading</Link>
+            <Link href="/referral" className="alipay-btn alipay-btn-secondary alipay-btn-lg w-full sm:w-auto text-center">Join Referral Program</Link>
           </div>
         </div>
       </section>
