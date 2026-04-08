@@ -1,0 +1,145 @@
+{
+  "version": 1,
+  "skills": {
+    "tavily-search": {
+      "version": "1.0.0",
+      "installedAt": 1774065392487
+    },
+    "summarize": {
+      "version": "1.0.0",
+      "installedAt": 1774065395213
+    },
+    "agent-browser": {
+      "version": "0.2.0",
+      "installedAt": 1774065398648
+    },
+    "find-skills": {
+      "version": "0.1.0",
+      "installedAt": 1774065401307
+    },
+    "github": {
+      "version": "1.0.0",
+      "installedAt": 1774065405437
+    },
+    "obsidian": {
+      "version": "1.0.0",
+      "installedAt": 1774065408289
+    },
+    "notion": {
+      "version": "1.0.0",
+      "installedAt": 1772637001453
+    },
+    "weather": {
+      "version": "1.0.0",
+      "installedAt": 1774065409556
+    },
+    "tencentcloud-lighthouse-skill": {
+      "version": "1.0.0",
+      "installedAt": 1772637005244
+    },
+    "tencent-docs": {
+      "version": "1.0.3",
+      "installedAt": 1772637007657
+    },
+    "okx-exchange": {
+      "version": "1.0.1",
+      "installedAt": 1772897093408
+    },
+    "okx-dex": {
+      "version": "1.0.0",
+      "installedAt": 1772897097476
+    },
+    "easy-swap": {
+      "version": "1.0.0",
+      "installedAt": 1772897101354
+    },
+    "crypto-4h-trade-brief": {
+      "version": "1.0.1",
+      "installedAt": 1772897105628
+    },
+    "binance-pro": {
+      "version": "1.0.0",
+      "installedAt": 1772972243575
+    },
+    "crypto-funding-alert": {
+      "version": "1.0.1",
+      "installedAt": 1772972246309
+    },
+    "funding-rate-trader": {
+      "version": "1.0.1",
+      "installedAt": 1772972249143
+    },
+    "polymarket": {
+      "version": "1.2.1",
+      "installedAt": 1773101880393
+    },
+    "polymarket-odds": {
+      "version": "1.0.0",
+      "installedAt": 1773101885324
+    },
+    "xhs-analytics": {
+      "version": "1.0.0",
+      "installedAt": 1773102142585
+    },
+    "xhs": {
+      "version": "1.2.5",
+      "installedAt": 1773102143736
+    },
+    "polymarket-arbitrage-scanner": {
+      "version": "1.0.2",
+      "installedAt": 1773103328179
+    },
+    "xiaohongshu-mcp": {
+      "version": "1.0.0",
+      "installedAt": 1773113715109
+    },
+    "dune-analytics-api": {
+      "version": "1.1.2",
+      "installedAt": 1773120775739
+    },
+    "celebrity-hot-money-tag": {
+      "version": "1.0.1",
+      "installedAt": 1773292334923
+    },
+    "a-share-multidim-quant-analysis": {
+      "version": "1.4.0",
+      "installedAt": 1773292422419
+    },
+    "playwright-scraper-skill": {
+      "version": "1.2.0",
+      "installedAt": 1773318995367
+    },
+    "finnhub-pro": {
+      "version": "1.1.0",
+      "installedAt": 1773567571455
+    },
+    "powerpoint-pptx": {
+      "version": "1.0.1",
+      "installedAt": 1773568664621
+    },
+    "ppt-generator": {
+      "version": "1.0.0",
+      "installedAt": 1773568668439
+    },
+    "scrapling": {
+      "version": "1.0.8",
+      "installedAt": 1773652680648
+    },
+    "marcus-a-stock": {
+      "version": "1.0.0",
+      "installedAt": 1773748656600
+    },
+    "agency-agents": {
+      "version": "1.0.2",
+      "installedAt": 1775404322635
+    },
+    "web-tools-guide": {
+      "version": "1.0.0",
+      "installedAt": 1775573391227
+    },
+    "superdesign": {
+      "version": "1.0.0",
+      "installedAt": 1775662562076
+    }
+  }
+}

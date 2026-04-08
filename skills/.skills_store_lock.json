@@ -1,0 +1,179 @@
+{
+  "version": 1,
+  "skills": {
+    "okx-exchange": {
+      "name": "OKX Exchange",
+      "zip_url": "http://lightmake.site/api/v1/download?slug=okx-exchange",
+      "source": "skillhub",
+      "version": "1.0.1"
+    },
+    "okx-dex": {
+      "name": "okx-dex",
+      "zip_url": "http://lightmake.site/api/v1/download?slug=okx-dex",
+      "source": "skillhub",
+      "version": "1.0.0"
+    },
+    "easy-swap": {
+      "name": "DEX Swap & Broadcast",
+      "zip_url": "http://lightmake.site/api/v1/download?slug=easy-swap",
+      "source": "skillhub",
+      "version": "1.0.0"
+    },
+    "crypto-4h-trade-brief": {
+      "name": "Crypto 4h Trade Brief",
+      "zip_url": "http://lightmake.site/api/v1/download?slug=crypto-4h-trade-brief",
+      "source": "skillhub",
+      "version": "1.0.1"
+    },
+    "binance-pro": {
+      "name": "Binance Pro",
+      "zip_url": "http://lightmake.site/api/v1/download?slug=binance-pro",
+      "source": "skillhub",
+      "version": "1.0.0"
+    },
+    "crypto-funding-alert": {
+      "name": "Crypto Funding Alert",
+      "zip_url": "http://lightmake.site/api/v1/download?slug=crypto-funding-alert",
+      "source": "skillhub",
+      "version": "1.0.1"
+    },
+    "funding-rate-trader": {
+      "name": "Funding Rate Trader",
+      "zip_url": "http://lightmake.site/api/v1/download?slug=funding-rate-trader",
+      "source": "skillhub",
+      "version": "1.0.1"
+    },
+    "polymarket": {
+      "name": "Polymarket",
+      "zip_url": "http://lightmake.site/api/v1/download?slug=polymarket",
+      "source": "skillhub",
+      "version": "1.2.1"
+    },
+    "polymarket-odds": {
+      "name": "Polymarket Odds",
+      "zip_url": "http://lightmake.site/api/v1/download?slug=polymarket-odds",
+      "source": "skillhub",
+      "version": "1.0.0"
+    },
+    "xhs-analytics": {
+      "name": "小红书数据分析",
+      "zip_url": "http://lightmake.site/api/v1/download?slug=xhs-analytics",
+      "source": "skillhub",
+      "version": "1.0.0"
+    },
+    "xhs": {
+      "name": "小红书 - RedNote",
+      "zip_url": "http://lightmake.site/api/v1/download?slug=xhs",
+      "source": "skillhub",
+      "version": "1.2.5"
+    },
+    "polymarket-arbitrage-scanner": {
+      "name": "Polymarket Arbitrage Scanner",
+      "zip_url": "http://lightmake.site/api/v1/download?slug=polymarket-arbitrage-scanner",
+      "source": "skillhub",
+      "version": "1.0.2"
+    },
+    "xiaohongshu-mcp": {
+      "name": "Xiaohongshu (小红书) Automation",
+      "zip_url": "http://lightmake.site/api/v1/download?slug=xiaohongshu-mcp",
+      "source": "skillhub",
+      "version": "1.0.0"
+    },
+    "dune-analytics-api": {
+      "name": "Dune Analytics API",
+      "zip_url": "http://lightmake.site/api/v1/download?slug=dune-analytics-api",
+      "source": "skillhub",
+      "version": "1.1.2"
+    },
+    "tavily-search": {
+      "name": "Tavily Web Search",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=tavily-search",
+      "source": "skillhub",
+      "version": "1.0.0"
+    },
+    "summarize": {
+      "name": "Summarize",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=summarize",
+      "source": "skillhub",
+      "version": "1.0.0"
+    },
+    "agent-browser": {
+      "name": "Agent Browser",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=agent-browser",
+      "source": "skillhub",
+      "version": "0.2.0"
+    },
+    "find-skills": {
+      "name": "Find Skills",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=find-skills",
+      "source": "skillhub",
+      "version": "0.1.0"
+    },
+    "github": {
+      "name": "Github",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=github",
+      "source": "skillhub",
+      "version": "1.0.0"
+    },
+    "obsidian": {
+      "name": "Obsidian",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=obsidian",
+      "source": "skillhub",
+      "version": "1.0.0"
+    },
+    "weather": {
+      "name": "Weather",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=weather",
+      "source": "skillhub",
+      "version": "1.0.0"
+    },
+    "celebrity-hot-money-tag": {
+      "name": "celebrity-hot-money-tag",
+      "zip_url": "http://lightmake.site/api/v1/download?slug=celebrity-hot-money-tag",
+      "source": "skillhub",
+      "version": "1.0.1"
+    },
+    "a-share-multidim-quant-analysis": {
+      "name": "A-Share Multi-Dimensional Quantitative Analysis",
+      "zip_url": "http://lightmake.site/api/v1/download?slug=a-share-multidim-quant-analysis",
+      "source": "skillhub",
+      "version": "1.4.0"
+    },
+    "playwright-scraper-skill": {
+      "name": "Playwright Scraper Skill",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=playwright-scraper-skill",
+      "source": "skillhub",
+      "version": "1.2.0"
+    },
+    "finnhub-pro": {
+      "name": "Finnhub Pro",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=finnhub-pro",
+      "source": "skillhub",
+      "version": "1.1.0"
+    },
+    "powerpoint-pptx": {
+      "name": "Powerpoint / PPTX",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=powerpoint-pptx",
+      "source": "skillhub",
+      "version": "1.0.1"
+    },
+    "ppt-generator": {
+      "name": "description: 将用户讲稿一键生成乔布斯风极简科技感竖屏HTML演示稿。当用户需要生成PPT、演示文稿、Slides、幻灯片，或要求科技风/极简风/乔布斯风格的演示时触发此技能。输出为单个可直接运行的HTML文件。",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=ppt-generator",
+      "source": "skillhub",
+      "version": "1.0.0"
+    },
+    "scrapling": {
+      "name": "Scrapling",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=scrapling",
+      "source": "skillhub",
+      "version": "1.0.8"
+    },
+    "marcus-a-stock": {
+      "name": "111",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=marcus-a-stock",
+      "source": "skillhub",
+      "version": "1.0.0"
+    }
+  }
+}

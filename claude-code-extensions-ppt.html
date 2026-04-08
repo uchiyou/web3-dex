@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code 扩展功能解析</title>
+  <script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/3.0.23/tailwind.min.js"></script>
+  <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.loli.net/css2?family=Noto+Sans+SC:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Noto Sans SC', 'Inter', sans-serif; background: #000; color: #fff; overflow: hidden; }
+    .slides-container { width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; background: #0a0a0a; }
+    .slide {
+      width: 100%; height: 100%; max-width: 450px; max-height: 800px; aspect-ratio: 9/16;
+      position: absolute; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 1.5rem; opacity: 0; transform: translateX(100%);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden;
+      background: linear-gradient(180deg, #0a0a0a 0%, #000000 100%);
+    }
+    .slide.active { opacity: 1; transform: translateX(0); }
+    .slide.prev { opacity: 0; transform: translateX(-100%); }
+    .light-spot { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.3; pointer-events: none; }
+    .light-spot-1 { width: 300px; height: 300px; background: #3b82f6; top: -100px; right: -100px; animation: float1 20s ease-in-out infinite; }
+    .light-spot-2 { width: 250px; height: 250px; background: #8b5cf6; bottom: -80px; left: -80px; animation: float2 25s ease-in-out infinite; }
+    .light-spot-3 { width: 200px; height: 200px; background: #06b6d4; top: 50%; left: 50%; animation: float3 18s ease-in-out infinite; }
+    .light-spot-4 { width: 200px; height: 200px; background: #f59e0b; top: 20%; left: -50px; animation: float4 22s ease-in-out infinite; }
+    .light-spot-5 { width: 180px; height: 180px; background: #10b981; bottom: 10%; right: -50px; animation: float5 20s ease-in-out infinite; }
+    @keyframes float1 { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(-50px, 30px); } 50% { transform: translate(30px, 50px); } 75% { transform: translate(50px, -20px); } }
+    @keyframes float2 { 0%, 100% { transform: translate(0, 0); } 33% { transform: translate(40px, -40px); } 66% { transform: translate(-30px, 30px); } }
+    @keyframes float3 { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.2); } }
+    @keyframes float4 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(30px, 30px); } }
+    @keyframes float5 { 0%, 100% { transform: translate(0, 0); } 33% { transform: translate(-30px, -30px); } 66% { transform: translate(20px, 20px); } }
+    .slide-content { position: relative; z-index: 10; text-align: center; width: 100%; }
+    .progress-bar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 100; }
+    .progress-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.3); cursor: pointer; transition: all 0.3s; }
+    .progress-dot.active { background: #fff; transform: scale(1.3); }
+    .progress-dot:hover { background: rgba(255,255,255,0.6); }
+    .page-number { position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%); font-size: 0.875rem; color: rgba(255,255,255,0.4); z-index: 100; }
+    .feature-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 0.75rem; margin-bottom: 0.5rem; text-align: left; }
+    .feature-tag { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.65rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .tag-blue { background: rgba(59,130,246,0.3); color: #60a5fa; }
+    .tag-purple { background: rgba(139,92,246,0.3); color: #a78bfa; }
+    .tag-green { background: rgba(16,185,129,0.3); color: #34d399; }
+    .tag-amber { background: rgba(245,158,11,0.3); color: #fbbf24; }
+    .tag-cyan { background: rgba(6,182,212,0.3); color: #22d3ee; }
+    .tag-pink { background: rgba(236,72,153,0.3); color: #f472b6; }
+    ul.content-list { list-style: none; text-align: left; }
+    ul.content-list li { padding: 0.4rem 0; padding-left: 1.2rem; position: relative; font-size: 0.8rem; color: #d1d5db; }
+    ul.content-list li::before { content: "•"; position: absolute; left: 0; color: #60a5fa; }
+    .diagram-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; padding: 0.6rem; margin: 0.4rem 0; }
+    .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .comparison-item { background: rgba(255,255,255,0.05); border-radius: 8px; padding: 0.6rem; font-size: 0.7rem; }
+  </style>
+</head>
+<body>
+  <div class="slides-container">
+    <!-- Slide 1: 封面 -->
+    <div class="slide active">
+      <div class="light-spot light-spot-1"></div>
+      <div class="light-spot light-spot-2"></div>
+      <div class="slide-content">
+        <div class="text-5xl mb-4">🔧</div>
+        <h1 class="text-3.5xl font-black mb-3 leading-tight">Claude Code<br>扩展功能解析</h1>
+        <p class="text-base font-light text-gray-400 mb-2">Skill · MCP · Plugin · Subagent</p>
+        <p class="text-xs font-light text-gray-500">理解四大扩展机制与应用场景</p>
+      </div>
+    </div>
+    <!-- Slide 2: Claude Code 是什么 -->
+    <div class="slide">
+      <div class="light-spot light-spot-3"></div>
+      <div class="slide-content">
+        <span class="feature-tag tag-blue">WHAT IS CLAUDE CODE</span>
+        <h1 class="text-2.5xl font-black mb-4 leading-tight">AI 驱动的<br>代理编码工具</h1>
+        <div class="text-left space-y-2">
+          <div class="feature-card"><p class="text-xs text-gray-300">读取代码库 · 编辑文件 · 运行命令 · 集成开发工具</p></div>
+          <div class="feature-card"><p class="text-xs text-gray-300">可在终端、IDE、桌面应用和浏览器中使用</p></div>
+          <div class="feature-card"><p class="text-xs text-gray-300">理解整个代码库，跨多个文件完成任务</p></div>
+        </div>
+      </div>
+    </div>
+    <!-- Slide 3: 为什么需要扩展 -->
+    <div class="slide">
+      <div class="light-spot light-spot-1"></div>
+      <div class="light-spot light-spot-4"></div>
+      <div class="slide-content">
+        <span class="feature-tag tag-purple">WHY EXTENSIONS</span>
+        <h1 class="text-2.5xl font-black mb-3 leading-tight">内置工具不够用？<br>扩展层来帮忙</h1>
+        <p class="text-xs font-light text-gray-400 mb-3 text-left">扩展插入代理循环的不同部分</p>
+        <div class="text-left space-y-1.5 text-xs">
+          <div class="flex items-center justify-between bg-white bg-opacity-5 rounded-lg p-2.5"><span class="text-gray-300">持久上下文</span><span class="text-blue-400 font-bold">CLAUDE.md</span></div>
+          <div class="flex items-center justify-between bg-white bg-opacity-5 rounded-lg p-2.5"><span class="text-gray-300">知识和工作流</span><span class="text-purple-400 font-bold">Skill</span></div>
+          <div class="flex items-center justify-between bg-white bg-opacity-5 rounded-lg p-2.5"><span class="text-gray-300">外部服务连接</span><span class="text-green-400 font-bold">MCP</span></div>
+          <div class="flex items-center justify-between bg-white bg-opacity-5 rounded-lg p-2.5"><span class="text-gray-300">隔离执行</span><span class="text-amber-400 font-bold">Subagent</span></div>
+        </div>
+      </div>
+    </div>
+    <!-- Slide 4: Skill 介绍 -->
+    <div class="slide">
+      <div class="light-spot light-spot-2"></div>
+      <div class="light-spot light-spot-5"></div>
+      <div class="slide-content">
+        <span class="feature-tag tag-purple">SKILL</span>
+        <h1 class="text-2.5xl font-black mb-3 leading-tight">可重用的<br>知识与工作流</h1>
+        <p class="text-xs font-light text-gray-400 mb-3">Claude Code 的"技能包"</p>
+        <ul class="content-list">
+          <li>包含知识、工作流或说明的 Markdown 文件</li>
+          <li>使用 <code class="bg-gray-800 px-1.5 py-0.5 rounded text-xs">/deploy</code> 命令调用</li>
+          <li>可自动加载或手动触发</li>
+          <li>可在主对话或隔离上下文中运行</li>
+        </ul>
+      </div>
+    </div>
+    <!-- Slide 5: Skill 的作用 -->
+    <div class="slide">
+      <div class="light-spot light-spot-1"></div>
+      <div class="light-spot light-spot-3"></div>
+      <div class="slide-content">
+        <span class="feature-tag tag-purple">SKILL · 作用</span>
+        <h1 class="text-2xl font-black mb-3">Skill 的核心作用</h1>
+        <div class="space-y-2 text-left">
+          <div class="diagram-box"><h3 class="text-xs font-bold text-purple-400 mb-1">📚 参考材料</h3><p class="text-xs text-gray-400">API 风格指南、文档、团队约定</p></div>
+          <div class="diagram-box"><h3 class="text-xs font-bold text-purple-400 mb-1">⚡ 操作工作流</h3><p class="text-xs text-gray-400">部署清单、代码审查流程、发布步骤</p></div>
+          <div class="diagram-box"><h3 class="text-xs font-bold text-purple-400 mb-1">🔄 可共享复用</h3><p class="text-xs text-gray-400">团队成员均可使用，保证一致性</p></div>
+        </div>
+      </div>
+    </div>
+    <!-- Slide 6: Skill vs CLAUDE.md -->
+    <div class="slide">
+      <div class="light-spot light-spot-4"></div>
+      <div class="light-spot light-spot-2"></div>
+      <div class="slide-content">
+        <span class="feature-tag tag-purple">SKILL · 对比</span>
+        <h1 class="text-xl font-black mb-3">Skill vs CLAUDE.md</h1>
+        <div class="comparison-grid text-xs">
+          <div class="comparison-item"><p class="text-gray-400 mb-1">加载方式</p><p class="text-white font-bold">按需</p><p class="text-gray-300">CLAUDE: 每个会话</p></div>
+          <div class="comparison-item"><p class="text-gray-400 mb-1">触发工作流</p><p class="text-green-400">✓ Skill 支持</p><p class="text-red-400">✗ CLAUDE 不支持</p></div>
+          <div class="comparison-item col-span-2"><p class="text-gray-400 mb-1">最佳用途</p><p class="text-white">Skill: 参考材料/可重复任务 | CLAUDE: 始终执行X规则</p></div>
+        </div>
+        <p class="text-xs text-gray-500 mt-3">经验法则：保持 CLAUDE.md &lt;200 行</p>
+      </div>
+    </div>
+    <!-- Slide 7: MCP 介绍 -->
+    <div class="slide">
+      <div class="light-spot light-spot-3"></div>
+      <div class="light-spot light-spot-1"></div>
+      <div class="slide-content">
+        <span class="feature-tag tag-green">MCP</span>
+        <h1 class="text-2.5xl font-black mb-3 leading-tight">Model Context Protocol<br>连接外部服务</h1>
+        <p class="text-xs font-light text-gray-400 mb-3">开放标准 · 工具连接协议</p>
+        <ul class="content-list">
+          <li>将 Claude 连接到外部数据源和工具</li>
+          <li>查询数据库、发布到 Slack、控制浏览器</li>
+          <li>读取 Google Drive、更新 Jira 工单</li>
+          <li>支持自定义工具扩展</li>
+        </ul>
+      </div>
+    </div>
+    <!-- Slide 8: MCP 的作用 -->
+    <div class="slide">
+      <div class="light-spot light-spot-5"></div>
+      <div class="light-spot light-spot-2"></div>
+      <div class="slide-content">
+        <span class="feature-tag tag-green">MCP · 作用</span>
+        <h1 class="text-xl font-black mb-3">MCP 核心能力</h1>
+        <div class="space-y-1.5 text-left">
+          <div class="diagram-box border-l-4 border-green-500"><h3 class="text-xs font-bold text-green-400 mb-0.5">🔌 数据库集成</h3><p class="text-xs text-gray-400">查询数据库、获取业务数据</p></div>
+          <div class="diagram-box border-l-4 border-green-500"><h3 class="text-xs font-bold text-green-400 mb-0.5">💬 消息通知</h3><p class="text-xs text-gray-400">发送 Slack、邮件、Webhook</p></div>
+          <div class="diagram-box border-l-4 border-green-500"><h3 class="text-xs font-bold text-green-400 mb-0.5">🌐 浏览器控制</h3><p class="text-xs text-gray-400">自动化 Web 测试、数据抓取</p></div>
+          <div class="diagram-box border-l-4 border-green-500"><h3 class="text-xs font-bold text-green-400 mb-0.5">📊 项目管理</h3><p class="text-xs text-gray-400">操作 Jira、Notion 等工具</p></div>
+        </div>
+      </div>
+    </div>
+    <!-- Slide 9: MCP vs Skill -->
+    <div class="slide">
+      <div class="light-spot light-spot-1"></div>
+      <div class="light-spot light-spot-3"></div>
+      <div class="slide-content">
+        <span class="feature-tag tag-green">MCP · 区别</span>
+        <h1 class="text-xl font-black mb-3">MCP 与 Skill 的区别</h1>
+        <div class="comparison-grid text-xs">
+          <div class="comparison-item"><p class="text-gray-400 mb-1">本质</p><p class="text-green-400 font-bold">MCP = 连接协议</p><p class="text-purple-400 font-bold">Skill = 知识载体</p></div>
+          <div class="comparison-item"><p class="text-gray-400 mb-1">提供</p><p class="text-green-400">工具和数据访问</p><p class="text-purple-400">知识/工作流/参考</p></div>
+          <div class="comparison-item col-span-2"><p class="text-gray-400 mb-1">协作模式</p><p class="text-white text-xs">MCP 连接数据库 + Skill 教导数据模型 = 完美配合</p></div>
+        </div>
+      </div>
+    </div>
+    <!-- Slide 10: Plugin 介绍 -->
+    <div class="slide">
+      <div class="light-spot light-spot-4"></div>
+      <div class="light-spot light-spot-1"></div>
+      <div class="slide-content">
+        <span class="feature-tag tag-amber">PLUGIN</span>
+        <h1 class="text-2.5xl font-black mb-3 leading-tight">插件<br>打包与分发单元</h1>
+        <p class="text-xs font-light text-gray-400 mb-3">功能的包装层</p>
+        <ul class="content-list">
+          <li>将 Skills、Hooks、Subagents、MCP 打包</li>
+          <li>命名空间避免冲突</li>
+          <li>通过市场分发给团队或他人</li>
+          <li>多个插件可以共存</li>
+        </ul>
+      </div>
+    </div>
+    <!-- Slide 11: Plugin 的作用 -->
+    <div class="slide">
+      <div class="light-spot light-spot-5"></div>
+      <div class="light-spot light-spot-2"></div>
+      <div class="slide-content">
+        <span class="feature-tag tag-amber">PLUGIN · 作用</span>
+        <h1 class="text-xl font-black mb-3">Plugin 核心价值</h1>
+        <div class="space-y-1.5 text-left">
+          <div class="diagram-box border-l-4 border-amber-500"><h3 class="text-xs font-bold text-amber-400 mb-0.5">📦 打包发布</h3><p class="text-xs text-gray-400">将多种功能捆绑为单一可安装单元</p></div>
+          <div class="diagram-box border-l-4 border-amber-500"><h3 class="text-xs font-bold text-amber-400 mb-0.5">🔒 命名空间隔离</h3><p class="text-xs text-gray-400">避免多插件功能冲突</p></div>
+          <div class="diagram-box border-l-4 border-amber-500"><h3 class="text-xs font-bold text-amber-400 mb-0.5">🌐 跨项目共享</h3><p class="text-xs text-gray-400">在多个仓库中重用相同设置</p></div>
+          <div class="diagram-box border-l-4 border-amber-500"><h3 class="text-xs font-bold text-amber-400 mb-0.5">🏪 市场分发</h3><p class="text-xs text-gray-400">通过 Marketplace 分发给他人</p></div>
+        </div>
+      </div>
+    </div>
+    <!-- Slide 12: Subagent 介绍 -->
+    <div class="slide">
+      <div class="light-spot light-spot-1"></div>
+      <div class="light-spot light-spot-2"></div>
+      <div class="slide-content">
+        <span class="feature-tag tag-cyan">SUBAGENT</span>
+        <h1 class="text-2.5xl font-black mb-3 leading-tight">子代理<br>隔离执行上下文</h1>
+        <p class="text-xs font-light text-gray-400 mb-3">独立工作 · 返回摘要</p>
+        <ul class="content-list">
+          <li>在独立上下文运行自己的循环</li>
+          <li>自定义系统提示和工具访问权限</li>
+          <li>上下文隔离，不污染主对话</li>
+          <li>结果以摘要形式返回</li>
+        </ul>
+      </div>
+    </div>
+    <!-- Slide 13: Subagent 的作用 -->
+    <div class="slide">
+      <div class="light-spot light-spot-3"></div>
+      <div class="light-spot light-spot-4"></div>
+      <div class="slide-content">
+        <span class="feature-tag tag-cyan">SUBAGENT · 作用</span>
+        <h1 class="text-xl font-black mb-3">Subagent 核心能力</h1>
+        <div class="space-y-1.5 text-left text-xs">
+          <div class="flex items-start gap-2 bg-white bg-opacity-5 rounded-lg p-2"><span class="text-cyan-400 font-bold">01</span><div><p class="text-white font-bold">保留上下文</p><p class="text-gray-400">探索在子代理中进行，主对话保持简洁</p></div></div>
+          <div class="flex items-start gap-2 bg-white bg-opacity-5 rounded-lg p-2"><span class="text-cyan-400 font-bold">02</span><div><p class="text-white font-bold">强制约束</p><p class="text-gray-400">限制工具访问，如只读研究员</p></div></div>
+          <div class="flex items-start gap-2 bg-white bg-opacity-5 rounded-lg p-2"><span class="text-cyan-400 font-bold">03</span><div><p class="text-white font-bold">控制成本</p><p class="text-gray-400">使用 Haiku 等低成本模型</p></div></div>
+          <div class="flex items-start gap-2 bg-white bg-opacity-5 rounded-lg p-2"><span class="text-cyan-400 font-bold">04</span><div><p class="text-white font-bold">并行工作</p><p class="text-gray-400">同时运行多个子代理</p></div></div>
+        </div>
+      </div>
+    </div>
+    <!-- Slide 14: Subagent vs Agent Team -->
+    <div class="slide">
+      <div class="light-spot light-spot-5"></div>
+      <div class="light-spot light-spot-1"></div>
+      <div class="slide-content">
+        <span class="feature-tag tag-cyan">对比</span>
+        <h1 class="text-xl font-black mb-3">Subagent vs Agent Team</h1>
+        <div class="comparison-grid text-xs">
+          <div class="comparison-item"><p class="text-gray-400 mb-1">上下文</p><p class="text-cyan-400">独立窗口</p><p class="text-pink-400">完全独立会话</p></div>
+          <div class="comparison-item"><p class="text-gray-400 mb-1">通信</p><p class="text-cyan-400">报告给主代理</p><p class="text-pink-400">队友直接互发</p></div>
+          <div class="comparison-item"><p class="text-gray-400 mb-1">协调</p><p class="text-cyan-400">主代理管理</p><p class="text-pink-400">共享任务列表</p></div>
+          <div class="comparison-item"><p class="text-gray-400 mb-1">成本</p><p class="text-green-400">较低</p><p class="text-red-400">较高</p></div>
+        </div>
+        <p class="text-xs text-gray-400 mt-2 text-left">Subagent: 专注任务，结果重要<br>Agent Team: 需要讨论协作</p>
+      </div>
+    </div>
+    <!-- Slide 15: 四者对比 -->
+    <div class="slide">
+      <div class="light-spot light-spot-2"></div>
+      <div class="light-spot light-spot-3"></div>
+      <div class="slide-content">
+        <span class="feature-tag tag-blue">总览</span>
+        <h1 class="text-xl font-black mb-3">四大扩展机制对比</h1>
+        <div class="text-left text-xs space-y-2">
+          <div class="bg-blue-600 bg-opacity-20 rounded-lg p-2 flex justify-between items-center"><span class="text-blue-400 font-bold">Skill</span><span class="text-gray-300">知识/工作流 · 按需加载</span></div>
+          <div class="bg-green-600 bg-opacity-20 rounded-lg p-2 flex justify-between items-center"><span class="text-green-400 font-bold">MCP</span><span class="text-gray-300">外部连接 · 工具访问</span></div>
+          <div class="bg-amber-600 bg-opacity-20 rounded-lg p-2 flex justify-between items-center"><span class="text-amber-400 font-bold">Plugin</span><span class="text-gray-300">打包分发 · 命名空间</span></div>
+          <div class="bg-cyan-600 bg-opacity-20 rounded-lg p-2 flex justify-between items-center"><span class="text-cyan-400 font-bold">Subagent</span><span class="text-gray-300">隔离执行 · 并行工作</span></div>
+        </div>
+      </div>
+    </div>
+    <!-- Slide 16: 组合使用 -->
+    <div class="slide">
+      <div class="light-spot light-spot-1"></div>
+      <div class="light-spot light-spot-4"></div>
+      <div class="slide-content">
+        <span class="feature-tag tag-pink">组合</span>
+        <h1 class="text-xl font-black mb-3">功能组合使用</h1>
+        <div class="space-y-1.5 text-left text-xs">
+          <div class="diagram-box"><p class="text-pink-400 font-bold mb-0.5">Skill + MCP</p><p class="text-gray-400">MCP 提供连接，Skill 教导如何使用</p></div>
+          <div class="diagram-box"><p class="text-pink-400 font-bold mb-0.5">Skill + Subagent</p><p class="text-gray-400">Skill 启动隔离上下文中的多个 Subagent</p></div>
+          <div class="diagram-box"><p class="text-pink-400 font-bold mb-0.5">CLAUDE.md + Skill</p><p class="text-gray-400">始终规则 + 按需参考材料</p></div>
+          <div class="diagram-box"><p class="text-pink-400 font-bold mb-0.5">Hook + MCP</p><p class="text-gray-400">文件修改后自动触发外部操作</p></div>
+        </div>
+      </div>
+    </div>
+    <!-- Slide 17: 如何选择 -->
+    <div class="slide">
+      <div class="light-spot light-spot-3"></div>
+      <div class="light-spot light-spot-5"></div>
+      <div class="slide-content">
+        <span class="feature-tag tag-blue">选择指南</span>
+        <h1 class="text-xl font-black mb-3">如何选择？</h1>
+        <div class="text-left text-xs space-y-1.5">
+          <div class="bg-purple-600 bg-opacity-20 rounded-lg p-2"><p class="text-purple-400 font-bold">始终知道的规则 → CLAUDE.md</p></div>
+          <div class="bg-green-600 bg-opacity-20 rounded-lg p-2"><p class="text-green-400 font-bold">连接外部工具 → MCP</p></div>
+          <div class="bg-blue-600 bg-opacity-20 rounded-lg p-2"><p class="text-blue-400 font-bold">可重用工作流 → Skill</p></div>
+          <div class="bg-cyan-600 bg-opacity-20 rounded-lg p-2"><p class="text-cyan-400 font-bold">隔离/并行/低成本 → Subagent</p></div>
+          <div class="bg-amber-600 bg-opacity-20 rounded-lg p-2"><p class="text-amber-400 font-bold">打包分发 → Plugin</p></div>
+        </div>
+      </div>
+    </div>
+    <!-- Slide 18: 结尾 -->
+    <div class="slide">
+      <div class="light-spot light-spot-1"></div>
+      <div class="light-spot light-spot-2"></div>
+      <div class="light-spot light-spot-3"></div>
+      <div class="slide-content">
+        <h1 class="text-2.5xl font-black mb-4">开始扩展你的<br>Claude Code</h1>
+        <p class="text-sm font-light text-gray-400 mb-4">根据你的需求选择合适的扩展机制</p>
+        <div class="text-xs text-gray-500">文档来源: code.claude.com/docs</div>
+      </div>
+    </div>
+  </div>
+  <div class="progress-bar" id="progressBar"></div>
+  <div class="page-number" id="pageNumber">1 / 18</div>
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const progressBar = document.getElementById('progressBar');
+    const pageNumber = document.getElementById('pageNumber');
+    let currentSlide = 0;
+    slides.forEach((_, index) => {
+      const dot = document.createElement('div');
+      dot.className = `progress-dot ${index === 0 ? 'active' : ''}`;
+      dot.addEventListener('click', () => goToSlide(index));
+      progressBar.appendChild(dot);
+    });
+    function updateSlides() {
+      slides.forEach((slide, index) => {
+        slide.classList.remove('active', 'prev');
+        if (index === currentSlide) slide.classList.add('active');
+        else if (index < currentSlide) slide.classList.add('prev');
+      });
+      document.querySelectorAll('.progress-dot').forEach((dot, index) => dot.classList.toggle('active', index === currentSlide));
+      pageNumber.textContent = `${currentSlide + 1} / ${slides.length}`;
+    }
+    function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; updateSlides(); } }
+    function prevSlide() { if (currentSlide > 0) { currentSlide--; updateSlides(); } }
+    function goToSlide(index) { currentSlide = index; updateSlides(); }
+    document.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight' || e.key === ' ') nextSlide(); else if (e.key === 'ArrowLeft') prevSlide(); });
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+    document.addEventListener('touchend', (e) => { const diff = touchStartX - e.changedTouches[0].clientX; if (Math.abs(diff) > 50) { if (diff > 0) nextSlide(); else prevSlide(); } });
+  </script>
+</body>
+</html>

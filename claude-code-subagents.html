@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+body {
+    font-family: "Helvetica Neue", Arial, "Microsoft YaHei", "PingFang SC", sans-serif;
+    font-size: 12pt;
+    line-height: 1.6;
+    max-width: 800px;
+    margin: 2cm auto;
+    padding: 0 1cm;
+    color: #333;
+}
+h1 {
+    font-size: 24pt;
+    color: #1a1a1a;
+    border-bottom: 2px solid #0066cc;
+    padding-bottom: 10px;
+    margin-top: 30px;
+}
+h2 {
+    font-size: 18pt;
+    color: #1a1a1a;
+    margin-top: 25px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+}
+h3 {
+    font-size: 14pt;
+    color: #333;
+    margin-top: 20px;
+}
+code {
+    background-color: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: "SF Mono", Monaco, Consolas, monospace;
+    font-size: 10pt;
+}
+pre {
+    background-color: #f5f5f5;
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+    border-left: 4px solid #0066cc;
+}
+pre code {
+    background-color: transparent;
+    padding: 0;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 15px 0;
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+    text-align: left;
+}
+th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+blockquote {
+    border-left: 4px solid #0066cc;
+    margin: 15px 0;
+    padding: 10px 15px;
+    background-color: #f9f9f9;
+}
+.warning {
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 10px 15px;
+    margin: 15px 0;
+}
+.note {
+    background-color: #e7f3ff;
+    border-left: 4px solid #0066cc;
+    padding: 10px 15px;
+    margin: 15px 0;
+}
+</style>
+</head>
+<body>
+<h1>Create custom subagents</h1>
+<blockquote>
+<p>Create and use specialized AI subagents in Claude Code for task-specific workflows and improved context management.</p>
+</blockquote>
+<p>Subagents are specialized AI assistants that handle specific types of tasks. Each subagent runs in its own context window with a custom system prompt, specific tool access, and independent permissions. When Claude encounters a task that matches a subagent's description, it delegates to that subagent, which works independently and returns results.</p>
+<p><Note>
+  If you need multiple agents working in parallel and communicating with each other, see <a href="/en/agent-teams">agent teams</a> instead. Subagents work within a single session; agent teams coordinate across separate sessions.
+</Note></p>
+<p>Subagents help you:</p>
+<ul>
+<li><strong>Preserve context</strong> by keeping exploration and implementation out of your main conversation</li>
+<li><strong>Enforce constraints</strong> by limiting which tools a subagent can use</li>
+<li><strong>Reuse configurations</strong> across projects with user-level subagents</li>
+<li><strong>Specialize behavior</strong> with focused system prompts for specific domains</li>
+<li><strong>Control costs</strong> by routing tasks to faster, cheaper models like Haiku</li>
+</ul>
+<p>Claude uses each subagent's description to decide when to delegate tasks. When you create a subagent, write a clear description so Claude knows when to use it.</p>
+<p>Claude Code includes several built-in subagents like <strong>Explore</strong>, <strong>Plan</strong>, and <strong>general-purpose</strong>. You can also create custom subagents to handle specific tasks. This page covers the built-in subagents, how to create your own, full configuration options, patterns for working with subagents, and example subagents.</p>
+<h2>Built-in subagents</h2>
+<p>Claude Code includes built-in subagents that Claude automatically uses when appropriate. Each inherits the parent conversation's permissions with additional tool restrictions.</p>
+<h3>Explore</h3>
+<p>A fast, read-only agent optimized for searching and analyzing codebases.</p>
+<ul>
+<li><strong>Model</strong>: Haiku (fast, low-latency)</li>
+<li><strong>Tools</strong>: Read-only tools (denied access to Write and Edit tools)</li>
+<li><strong>Purpose</strong>: File discovery, code search, codebase exploration</li>
+</ul>
+<p>Claude delegates to Explore when it needs to search or understand a codebase without making changes. This keeps exploration results out of your main conversation context.</p>
+<p>When invoking Explore, Claude specifies a thoroughness level: <strong>quick</strong> for targeted lookups, <strong>medium</strong> for balanced exploration, or <strong>very thorough</strong> for comprehensive analysis.</p>
+<h3>Plan</h3>
+<p>A research agent used during plan mode to gather context before presenting a plan.</p>
+<ul>
+<li><strong>Model</strong>: Inherits from main conversation</li>
+<li><strong>Tools</strong>: Read-only tools (denied access to Write and Edit tools)</li>
+<li><strong>Purpose</strong>: Codebase research for planning</li>
+</ul>
+<p>When you're in plan mode and Claude needs to understand your codebase, it delegates research to the Plan subagent. This prevents infinite nesting (subagents cannot spawn other subagents) while still gathering necessary context.</p>
+<h3>General-purpose</h3>
+<p>A capable agent for complex, multi-step tasks that require both exploration and action.</p>
+<ul>
+<li><strong>Model</strong>: Inherits from main conversation</li>
+<li><strong>Tools</strong>: All tools</li>
+<li><strong>Purpose</strong>: Complex research, multi-step operations, code modifications</li>
+</ul>
+<p>Claude delegates to general-purpose when the task requires both exploration and modification, complex reasoning to interpret results, or multiple dependent steps.</p>
+<h3>Other</h3>
+<p>Claude Code includes additional helper agents for specific tasks. These are typically invoked automatically, so you don't need to use them directly.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Agent</th>
+<th style="text-align: left;">Model</th>
+<th style="text-align: left;">When Claude uses it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">statusline-setup</td>
+<td style="text-align: left;">Sonnet</td>
+<td style="text-align: left;">When you run <code>/statusline</code> to configure your status line</td>
+</tr>
+<tr>
+<td style="text-align: left;">Claude Code Guide</td>
+<td style="text-align: left;">Haiku</td>
+<td style="text-align: left;">When you ask questions about Claude Code features</td>
+</tr>
+</tbody>
+</table>
+<p>Beyond these built-in subagents, you can create your own with custom prompts, tool restrictions, permission modes, hooks, and skills.</p>
+<h2>Quickstart: create your first subagent</h2>
+<p>Subagents are defined in Markdown files with YAML frontmatter. You can create them manually or use the <code>/agents</code> command.</p>
+<p>This walkthrough guides you through creating a user-level subagent with the <code>/agents</code> command. The subagent reviews code and suggests improvements for the codebase.</p>
+<p><strong>Step 1: Open the subagents interface</strong></p>
+<p>In Claude Code, run: <code>/agents</code></p>
+<p><strong>Step 2: Choose a location</strong></p>
+<p>Select <strong>Create new agent</strong>, then choose <strong>Personal</strong>. This saves the subagent to <code>~/.claude/agents/</code> so it's available in all your projects.</p>
+<p><strong>Step 3: Generate with Claude</strong></p>
+<p>Select <strong>Generate with Claude</strong>. When prompted, describe the subagent.</p>
+<p><strong>Step 4: Select tools</strong></p>
+<p>For a read-only reviewer, deselect everything except <strong>Read-only tools</strong>. If you keep all tools selected, the subagent inherits all tools available to the main conversation.</p>
+<p><strong>Step 5: Select model</strong></p>
+<p>Choose which model the subagent uses. For this example agent, select <strong>Sonnet</strong>, which balances capability and speed for analyzing code patterns.</p>
+<p><strong>Step 6: Choose a color</strong></p>
+<p>Pick a background color for the subagent. This helps you identify which subagent is running in the UI.</p>
+<p><strong>Step 7: Configure memory</strong></p>
+<p>Select <strong>User scope</strong> to give the subagent a persistent memory directory at <code>~/.claude/agent-memory/</code>. The subagent uses this to accumulate insights across conversations. Select <strong>None</strong> if you don't want the subagent to persist learnings.</p>
+<p><strong>Step 8: Save and try it out</strong></p>
+<p>Review the configuration summary. Press <code>s</code> or <code>Enter</code> to save, or press <code>e</code> to save and edit the file in your editor. The subagent is available immediately. Try it:</p>
+<div class="codehilite"><pre><span></span><code>Use the code-improver agent to suggest improvements in this project
+</code></pre></div>
+
+<p>Claude delegates to your new subagent, which scans the codebase and returns improvement suggestions.</p>
+<h2>Configure subagents</h2>
+<h3>Use the /agents command</h3>
+<p>The <code>/agents</code> command provides an interactive interface for managing subagents. Run <code>/agents</code> to:</p>
+<ul>
+<li>View all available subagents (built-in, user, project, and plugin)</li>
+<li>Create new subagents with guided setup or Claude generation</li>
+<li>Edit existing subagent configuration and tool access</li>
+<li>Delete custom subagents</li>
+<li>See which subagents are active when duplicates exist</li>
+</ul>
+<p>This is the recommended way to create and manage subagents. For manual creation or automation, you can also add subagent files directly.</p>
+<p>To list all configured subagents from the command line without starting an interactive session, run <code>claude agents</code>. This shows agents grouped by source and indicates which are overridden by higher-priority definitions.</p>
+<h3>Choose the subagent scope</h3>
+<p>Subagents are Markdown files with YAML frontmatter. Store them in different locations depending on scope. When multiple subagents share the same name, the higher-priority location wins.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Location</th>
+<th style="text-align: left;">Scope</th>
+<th style="text-align: left;">Priority</th>
+<th style="text-align: left;">How to create</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Managed settings</td>
+<td style="text-align: left;">Organization-wide</td>
+<td style="text-align: left;">1 (highest)</td>
+<td style="text-align: left;">Deployed via managed settings</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>--agents</code> CLI flag</td>
+<td style="text-align: left;">Current session</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">Pass JSON when launching Claude Code</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>.claude/agents/</code></td>
+<td style="text-align: left;">Current project</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">Interactive or manual</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>~/.claude/agents/</code></td>
+<td style="text-align: left;">All your projects</td>
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">Interactive or manual</td>
+</tr>
+<tr>
+<td style="text-align: left;">Plugin's <code>agents/</code> directory</td>
+<td style="text-align: left;">Where plugin is enabled</td>
+<td style="text-align: left;">5 (lowest)</td>
+<td style="text-align: left;">Installed with plugins</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Project subagents</strong> (<code>.claude/agents/</code>) are ideal for subagents specific to a codebase. Check them into version control so your team can use and improve them collaboratively.</p>
+<p><strong>User subagents</strong> (<code>~/.claude/agents/</code>) are personal subagents available in all your projects.</p>
+<p><strong>CLI-defined subagents</strong> are passed as JSON when launching Claude Code. They exist only for that session and aren't saved to disk, making them useful for quick testing or automation scripts. You can define multiple subagents in a single <code>--agents</code> call:</p>
+<div class="codehilite"><pre><span></span><code>claude<span class="w"> </span>--agents<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">  &quot;code-reviewer&quot;: {</span>
+<span class="s1">    &quot;description&quot;: &quot;Expert code reviewer. Use proactively after code changes.&quot;,</span>
+<span class="s1">    &quot;prompt&quot;: &quot;You are a senior code reviewer. Focus on code quality, security, and best practices.&quot;,</span>
+<span class="s1">    &quot;tools&quot;: [&quot;Read&quot;, &quot;Grep&quot;, &quot;Glob&quot;, &quot;Bash&quot;],</span>
+<span class="s1">    &quot;model&quot;: &quot;sonnet&quot;</span>
+<span class="s1">  },</span>
+<span class="s1">  &quot;debugger&quot;: {</span>
+<span class="s1">    &quot;description&quot;: &quot;Debugging specialist for errors and test failures.&quot;,</span>
+<span class="s1">    &quot;prompt&quot;: &quot;You are an expert debugger. Analyze errors, identify root causes, and provide fixes.&quot;</span>
+<span class="s1">  }</span>
+<span class="s1">}&#39;</span>
+</code></pre></div>
+
+<h3>Write subagent files</h3>
+<p>Subagent files use YAML frontmatter for configuration, followed by the system prompt in Markdown:</p>
+<div class="codehilite"><pre><span></span><code>---
+name: code-reviewer
+description: Reviews code for quality and best practices
+tools: Read, Glob, Grep
+<span class="gu">model: sonnet</span>
+<span class="gu">---</span>
+
+You are a code reviewer. When invoked, analyze the code and provide
+specific, actionable feedback on quality, security, and best practices.
+</code></pre></div>
+
+<p>The frontmatter defines the subagent's metadata and configuration. The body becomes the system prompt that guides the subagent's behavior. Subagents receive only this system prompt (plus basic environment details like working directory), not the full Claude Code system prompt.</p>
+<h4>Supported frontmatter fields</h4>
+<p>The following fields can be used in the YAML frontmatter. Only <code>name</code> and <code>description</code> are required.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Required</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>name</code></td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">Unique identifier using lowercase letters and hyphens</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>description</code></td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">When Claude should delegate to this subagent</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>tools</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Tools the subagent can use. Inherits all tools if omitted</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>disallowedTools</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Tools to deny, removed from inherited or specified list</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>model</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Model to use: <code>sonnet</code>, <code>opus</code>, <code>haiku</code>, a full model ID (for example, <code>claude-opus-4-6</code>), or <code>inherit</code>. Defaults to <code>inherit</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>permissionMode</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Permission mode: <code>default</code>, <code>acceptEdits</code>, <code>auto</code>, <code>dontAsk</code>, <code>bypassPermissions</code>, or <code>plan</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>maxTurns</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Maximum number of agentic turns before the subagent stops</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>skills</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Skills to load into the subagent's context at startup. The full skill content is injected, not just made available for invocation. Subagents don't inherit skills from the parent conversation</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>mcpServers</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">MCP servers available to this subagent. Each entry is either a server name referencing an already-configured server or an inline definition</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hooks</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Lifecycle hooks scoped to this subagent</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>memory</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Persistent memory scope: <code>user</code>, <code>project</code>, or <code>local</code>. Enables cross-session learning</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>background</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Set to <code>true</code> to always run this subagent as a background task. Default: <code>false</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>effort</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Effort level when this subagent is active. Overrides the session effort level. Default: inherits from session. Options: <code>low</code>, <code>medium</code>, <code>high</code>, <code>max</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>isolation</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Set to <code>worktree</code> to run the subagent in a temporary git worktree, giving it an isolated copy of the repository. The worktree is automatically cleaned up if the subagent makes no changes</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>color</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Display color for the subagent in the task list and transcript. Accepts <code>red</code>, <code>blue</code>, <code>green</code>, <code>yellow</code>, <code>purple</code>, <code>orange</code>, <code>pink</code>, or <code>cyan</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>initialPrompt</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Auto-submitted as the first user turn when this agent runs as the main session agent. Prepended to any user-provided prompt</td>
+</tr>
+</tbody>
+</table>
+<h3>Choose a model</h3>
+<p>The <code>model</code> field controls which AI model the subagent uses:</p>
+<ul>
+<li><strong>Model alias</strong>: Use one of the available aliases: <code>sonnet</code>, <code>opus</code>, or <code>haiku</code></li>
+<li><strong>Full model ID</strong>: Use a full model ID such as <code>claude-opus-4-6</code> or <code>claude-sonnet-4-6</code></li>
+<li><strong>inherit</strong>: Use the same model as the main conversation</li>
+<li><strong>Omitted</strong>: If not specified, defaults to <code>inherit</code></li>
+</ul>
+<p>When Claude invokes a subagent, it can also pass a <code>model</code> parameter for that specific invocation. Claude Code resolves the subagent's model in this order:</p>
+<ol>
+<li>The <code>CLAUDE_CODE_SUBAGENT_MODEL</code> environment variable, if set</li>
+<li>The per-invocation <code>model</code> parameter</li>
+<li>The subagent definition's <code>model</code> frontmatter</li>
+<li>The main conversation's model</li>
+</ol>
+<h3>Control subagent capabilities</h3>
+<p>You can control what subagents can do through tool access, permission modes, and conditional rules.</p>
+<h4>Available tools</h4>
+<p>Subagents can use any of Claude Code's internal tools. By default, subagents inherit all tools from the main conversation, including MCP tools.</p>
+<p>To restrict tools, use either the <code>tools</code> field (allowlist) or the <code>disallowedTools</code> field (denylist). This example uses <code>tools</code> to exclusively allow Read, Grep, Glob, and Bash:</p>
+<div class="codehilite"><pre><span></span><code><span class="nn">---</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">safe-researcher</span>
+<span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Research agent with restricted capabilities</span>
+<span class="nt">tools</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Read, Grep, Glob, Bash</span>
+<span class="nn">---</span>
+</code></pre></div>
+
+<p>This example uses <code>disallowedTools</code> to inherit every tool from the main conversation except Write and Edit:</p>
+<div class="codehilite"><pre><span></span><code><span class="nn">---</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no-writes</span>
+<span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Inherits every tool except file writes</span>
+<span class="nt">disallowedTools</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Write, Edit</span>
+<span class="nn">---</span>
+</code></pre></div>
+
+<p>If both are set, <code>disallowedTools</code> is applied first, then <code>tools</code> is resolved against the remaining pool.</p>
+<h4>Restrict which subagents can be spawned</h4>
+<p>When an agent runs as the main thread with <code>claude --agent</code>, it can spawn subagents using the Agent tool. To restrict which subagent types it can spawn, use <code>Agent(agent_type)</code> syntax in the <code>tools</code> field:</p>
+<div class="codehilite"><pre><span></span><code><span class="nn">---</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">coordinator</span>
+<span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Coordinates work across specialized agents</span>
+<span class="nt">tools</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Agent(worker, researcher), Read, Bash</span>
+<span class="nn">---</span>
+</code></pre></div>
+
+<p>This is an allowlist: only the <code>worker</code> and <code>researcher</code> subagents can be spawned. If the agent tries to spawn any other type, the request fails.</p>
+<p>To allow spawning any subagent without restrictions, use <code>Agent</code> without parentheses:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">tools</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Agent, Read, Bash</span>
+</code></pre></div>
+
+<p>If <code>Agent</code> is omitted from the <code>tools</code> list entirely, the agent cannot spawn any subagents.</p>
+<h4>Scope MCP servers to a subagent</h4>
+<p>Use the <code>mcpServers</code> field to give a subagent access to MCP servers that aren't available in the main conversation. Inline servers defined here are connected when the subagent starts and disconnected when it finishes.</p>
+<div class="codehilite"><pre><span></span><code><span class="nn">---</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">browser-tester</span>
+<span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Tests features in a real browser using Playwright</span>
+<span class="nt">mcpServers</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">playwright</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stdio</span>
+<span class="w">      </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">npx</span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;-y&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;@playwright/mcp@latest&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">github</span>
+<span class="nn">---</span>
+
+<span class="l l-Scalar l-Scalar-Plain">Use the Playwright tools to navigate, screenshot, and interact with pages.</span>
+</code></pre></div>
+
+<h4>Permission modes</h4>
+<p>The <code>permissionMode</code> field controls how the subagent handles permission prompts:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Mode</th>
+<th style="text-align: left;">Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>default</code></td>
+<td style="text-align: left;">Standard permission checking with prompts</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>acceptEdits</code></td>
+<td style="text-align: left;">Auto-accept file edits except in protected directories</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>auto</code></td>
+<td style="text-align: left;">Auto mode: a background classifier reviews commands and protected-directory writes</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>dontAsk</code></td>
+<td style="text-align: left;">Auto-deny permission prompts (explicitly allowed tools still work)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>bypassPermissions</code></td>
+<td style="text-align: left;">Skip permission prompts</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>plan</code></td>
+<td style="text-align: left;">Plan mode (read-only exploration)</td>
+</tr>
+</tbody>
+</table>
+<p><Warning>
+  Use <code>bypassPermissions</code> with caution. It skips permission prompts, allowing the subagent to execute operations without approval.
+</Warning></p>
+<h4>Preload skills into subagents</h4>
+<p>Use the <code>skills</code> field to inject skill content into a subagent's context at startup:</p>
+<div class="codehilite"><pre><span></span><code><span class="nn">---</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">api-developer</span>
+<span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Implement API endpoints following team conventions</span>
+<span class="nt">skills</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">api-conventions</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">error-handling-patterns</span>
+<span class="nn">---</span>
+
+<span class="l l-Scalar l-Scalar-Plain">Implement API endpoints. Follow the conventions and patterns from the preloaded skills.</span>
+</code></pre></div>
+
+<p>The full content of each skill is injected into the subagent's context, not just made available for invocation. Subagents don't inherit skills from the parent conversation; you must list them explicitly.</p>
+<h4>Enable persistent memory</h4>
+<p>The <code>memory</code> field gives the subagent a persistent directory that survives across conversations:</p>
+<div class="codehilite"><pre><span></span><code><span class="nn">---</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">code-reviewer</span>
+<span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Reviews code for quality and best practices</span>
+<span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">user</span>
+<span class="nn">---</span>
+
+<span class="l l-Scalar l-Scalar-Plain">You are a code reviewer. As you review code, update your agent memory with</span>
+<span class="l l-Scalar l-Scalar-Plain">patterns, conventions, and recurring issues you discover.</span>
+</code></pre></div>
+
+<p>Choose a scope based on how broadly the memory should apply:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Scope</th>
+<th style="text-align: left;">Location</th>
+<th style="text-align: left;">Use when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>user</code></td>
+<td style="text-align: left;"><code>~/.claude/agent-memory/&lt;name-of-agent&gt;/</code></td>
+<td style="text-align: left;">the subagent should remember learnings across all projects</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>project</code></td>
+<td style="text-align: left;"><code>.claude/agent-memory/&lt;name-of-agent&gt;/</code></td>
+<td style="text-align: left;">the subagent's knowledge is project-specific and shareable via version control</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>local</code></td>
+<td style="text-align: left;"><code>.claude/agent-memory-local/&lt;name-of-agent&gt;/</code></td>
+<td style="text-align: left;">the subagent's knowledge is project-specific but should not be checked into version control</td>
+</tr>
+</tbody>
+</table>
+<p>When memory is enabled:</p>
+<ul>
+<li>The subagent's system prompt includes instructions for reading and writing to the memory directory.</li>
+<li>The subagent's system prompt also includes the first 200 lines or 25KB of <code>MEMORY.md</code> in the memory directory.</li>
+<li>Read, Write, and Edit tools are automatically enabled so the subagent can manage its memory files.</li>
+</ul>
+<h4>Conditional rules with hooks</h4>
+<p>For more dynamic control over tool usage, use <code>PreToolUse</code> hooks to validate operations before they execute:</p>
+<div class="codehilite"><pre><span></span><code><span class="nn">---</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db-reader</span>
+<span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Execute read-only database queries</span>
+<span class="nt">tools</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Bash</span>
+<span class="nt">hooks</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">PreToolUse</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">matcher</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bash&quot;</span>
+<span class="w">      </span><span class="nt">hooks</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">command</span>
+<span class="w">          </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;./scripts/validate-readonly-query.sh&quot;</span>
+<span class="nn">---</span>
+</code></pre></div>
+
+<h4>Disable specific subagents</h4>
+<p>You can prevent Claude from using specific subagents by adding them to the <code>deny</code> array in your settings:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;permissions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;deny&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Agent(Explore)&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Agent(my-custom-agent)&quot;</span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>This works for both built-in and custom subagents. You can also use the <code>--disallowedTools</code> CLI flag.</p>
+<h3>Define hooks for subagents</h3>
+<p>Subagents can define hooks that run during the subagent's lifecycle. There are two ways to configure hooks:</p>
+<ol>
+<li><strong>In the subagent's frontmatter</strong>: Define hooks that run only while that subagent is active</li>
+<li><strong>In <code>settings.json</code></strong>: Define hooks that run in the main session when subagents start or stop</li>
+</ol>
+<h4>Hooks in subagent frontmatter</h4>
+<p>Define hooks directly in the subagent's markdown file. These hooks only run while that specific subagent is active.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Event</th>
+<th style="text-align: left;">Matcher input</th>
+<th style="text-align: left;">When it fires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>PreToolUse</code></td>
+<td style="text-align: left;">Tool name</td>
+<td style="text-align: left;">Before the subagent uses a tool</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>PostToolUse</code></td>
+<td style="text-align: left;">Tool name</td>
+<td style="text-align: left;">After the subagent uses a tool</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Stop</code></td>
+<td style="text-align: left;">(none)</td>
+<td style="text-align: left;">When the subagent finishes</td>
+</tr>
+</tbody>
+</table>
+<h4>Project-level hooks for subagent events</h4>
+<p>Configure hooks in <code>settings.json</code> that respond to subagent lifecycle events:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Event</th>
+<th style="text-align: left;">Matcher input</th>
+<th style="text-align: left;">When it fires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>SubagentStart</code></td>
+<td style="text-align: left;">Agent type name</td>
+<td style="text-align: left;">When a subagent begins execution</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>SubagentStop</code></td>
+<td style="text-align: left;">Agent type name</td>
+<td style="text-align: left;">When a subagent completes</td>
+</tr>
+</tbody>
+</table>
+<h2>Work with subagents</h2>
+<h3>Understand automatic delegation</h3>
+<p>Claude automatically delegates tasks based on the task description in your request, the <code>description</code> field in subagent configurations, and current context. To encourage proactive delegation, include phrases like "use proactively" in your subagent's description field.</p>
+<h3>Invoke subagents explicitly</h3>
+<p>When automatic delegation isn't enough, you can request a subagent yourself. Three patterns:</p>
+<ul>
+<li><strong>Natural language</strong>: name the subagent in your prompt; Claude decides whether to delegate</li>
+<li><strong>@-mention</strong>: guarantees the subagent runs for one task</li>
+<li><strong>Session-wide</strong>: the whole session uses that subagent's system prompt via the <code>--agent</code> flag</li>
+</ul>
+<p>For natural language:</p>
+<div class="codehilite"><pre><span></span><code>Use the test-runner subagent to fix failing tests
+Have the code-reviewer subagent look at my recent changes
+</code></pre></div>
+
+<p><strong>@-mention the subagent.</strong> Type <code>@</code> and pick the subagent from the typeahead:</p>
+<div class="codehilite"><pre><span></span><code><span class="s">@&quot;code-reviewer (agent)&quot;</span><span class="w"> </span><span class="n">look</span><span class="w"> </span><span class="n">at</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">auth</span><span class="w"> </span><span class="n">changes</span>
+</code></pre></div>
+
+<p><strong>Run the whole session as a subagent:</strong></p>
+<div class="codehilite"><pre><span></span><code>claude<span class="w"> </span>--agent<span class="w"> </span>code-reviewer
+</code></pre></div>
+
+<p>To make it the default for every session in a project, set <code>agent</code> in <code>.claude/settings.json</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;agent&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;code-reviewer&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3>Run subagents in foreground or background</h3>
+<p>Subagents can run in the foreground (blocking) or background (concurrent):</p>
+<ul>
+<li><strong>Foreground subagents</strong> block the main conversation until complete.</li>
+<li><strong>Background subagents</strong> run concurrently while you continue working. Before launching, Claude Code prompts for any tool permissions the subagent will need.</li>
+</ul>
+<p>Claude decides whether to run subagents in the foreground or background based on the task. You can also:</p>
+<ul>
+<li>Ask Claude to "run this in the background"</li>
+<li>Press <strong>Ctrl+B</strong> to background a running task</li>
+</ul>
+<h3>Common patterns</h3>
+<h4>Isolate high-volume operations</h4>
+<p>One of the most effective uses for subagents is isolating operations that produce large amounts of output. Running tests, fetching documentation, or processing log files can consume significant context. By delegating these to a subagent, the verbose output stays in the subagent's context while only the relevant summary returns to your main conversation.</p>
+<div class="codehilite"><pre><span></span><code>Use a subagent to run the test suite and report only the failing tests with their error messages
+</code></pre></div>
+
+<h4>Run parallel research</h4>
+<p>For independent investigations, spawn multiple subagents to work simultaneously:</p>
+<div class="codehilite"><pre><span></span><code>Research the authentication, database, and API modules in parallel using separate subagents
+</code></pre></div>
+
+<p>Each subagent explores its area independently, then Claude synthesizes the findings. This works best when the research paths don't depend on each other.</p>
+<h4>Chain subagents</h4>
+<p>For multi-step workflows, ask Claude to use subagents in sequence:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">Use</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">code</span><span class="o">-</span><span class="nv">reviewer</span><span class="w"> </span><span class="nv">subagent</span><span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="nv">find</span><span class="w"> </span><span class="nv">performance</span><span class="w"> </span><span class="nv">issues</span>,<span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="nv">use</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">optimizer</span><span class="w"> </span><span class="nv">subagent</span><span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="nv">fix</span><span class="w"> </span><span class="nv">them</span>
+</code></pre></div>
+
+<h3>Choose between subagents and main conversation</h3>
+<p>Use the <strong>main conversation</strong> when:</p>
+<ul>
+<li>The task needs frequent back-and-forth or iterative refinement</li>
+<li>Multiple phases share significant context (planning, implementation, testing)</li>
+<li>You're making a quick, targeted change</li>
+<li>Latency matters. Subagents start fresh and may need time to gather context</li>
+</ul>
+<p>Use <strong>subagents</strong> when:</p>
+<ul>
+<li>The task produces verbose output you don't need in your main context</li>
+<li>You want to enforce specific tool restrictions or permissions</li>
+<li>The work is self-contained and can return a summary</li>
+</ul>
+<h3>Manage subagent context</h3>
+<h4>Resume subagents</h4>
+<p>Each subagent invocation creates a new instance with fresh context. To continue an existing subagent's work instead of starting over, ask Claude to resume it.</p>
+<p>Resumed subagents retain their full conversation history, including all previous tool calls, results, and reasoning. The subagent picks up exactly where it stopped rather than starting fresh.</p>
+<h4>Auto-compaction</h4>
+<p>Subagents support automatic compaction using the same logic as the main conversation. By default, auto-compaction triggers at approximately 95% capacity.</p>
+<h2>Example subagents</h2>
+<h3>Code reviewer</h3>
+<p>A read-only subagent that reviews code without modifying it:</p>
+<div class="codehilite"><pre><span></span><code>---
+name: code-reviewer
+description: Expert code review specialist. Proactively reviews code for quality, security, and maintainability.
+tools: Read, Grep, Glob, Bash
+<span class="gu">model: inherit</span>
+<span class="gu">---</span>
+
+You are a senior code reviewer ensuring high standards of code quality and security.
+
+When invoked:
+<span class="k">1.</span> Run git diff to see recent changes
+<span class="k">2.</span> Focus on modified files
+<span class="k">3.</span> Begin review immediately
+
+Review checklist:
+<span class="k">-</span><span class="w"> </span>Code is clear and readable
+<span class="k">-</span><span class="w"> </span>Functions and variables are well-named
+<span class="k">-</span><span class="w"> </span>No duplicated code
+<span class="k">-</span><span class="w"> </span>Proper error handling
+<span class="k">-</span><span class="w"> </span>No exposed secrets or API keys
+<span class="k">-</span><span class="w"> </span>Input validation implemented
+<span class="k">-</span><span class="w"> </span>Good test coverage
+<span class="k">-</span><span class="w"> </span>Performance considerations addressed
+
+Provide feedback organized by priority:
+<span class="k">-</span><span class="w"> </span>Critical issues (must fix)
+<span class="k">-</span><span class="w"> </span>Warnings (should fix)
+<span class="k">-</span><span class="w"> </span>Suggestions (consider improving)
+
+Include specific examples of how to fix issues.
+</code></pre></div>
+
+<h3>Debugger</h3>
+<p>A subagent that can both analyze and fix issues:</p>
+<div class="codehilite"><pre><span></span><code>---
+name: debugger
+description: Debugging specialist for errors, test failures, and unexpected behavior.
+<span class="gu">tools: Read, Edit, Bash, Grep, Glob</span>
+<span class="gu">---</span>
+
+You are an expert debugger specializing in root cause analysis.
+
+When invoked:
+<span class="k">1.</span> Capture error message and stack trace
+<span class="k">2.</span> Identify reproduction steps
+<span class="k">3.</span> Isolate the failure location
+<span class="k">4.</span> Implement minimal fix
+<span class="k">5.</span> Verify solution works
+
+Debugging process:
+<span class="k">-</span><span class="w"> </span>Analyze error messages and logs
+<span class="k">-</span><span class="w"> </span>Check recent code changes
+<span class="k">-</span><span class="w"> </span>Form and test hypotheses
+<span class="k">-</span><span class="w"> </span>Add strategic debug logging
+<span class="k">-</span><span class="w"> </span>Inspect variable states
+
+For each issue, provide:
+<span class="k">-</span><span class="w"> </span>Root cause explanation
+<span class="k">-</span><span class="w"> </span>Evidence supporting the diagnosis
+<span class="k">-</span><span class="w"> </span>Specific code fix
+<span class="k">-</span><span class="w"> </span>Testing approach
+<span class="k">-</span><span class="w"> </span>Prevention recommendations
+
+Focus on fixing the underlying issue, not the symptoms.
+</code></pre></div>
+
+<h3>Data scientist</h3>
+<p>A domain-specific subagent for data analysis work:</p>
+<div class="codehilite"><pre><span></span><code>---
+name: data-scientist
+description: Data analysis expert for SQL queries, BigQuery operations, and data insights.
+tools: Bash, Read, Write
+<span class="gu">model: sonnet</span>
+<span class="gu">---</span>
+
+You are a data scientist specializing in SQL and BigQuery analysis.
+
+When invoked:
+<span class="k">1.</span> Understand the data analysis requirement
+<span class="k">2.</span> Write efficient SQL queries
+<span class="k">3.</span> Use BigQuery command line tools (bq) when appropriate
+<span class="k">4.</span> Analyze and summarize results
+<span class="k">5.</span> Present findings clearly
+
+Key practices:
+<span class="k">-</span><span class="w"> </span>Write optimized SQL queries with proper filters
+<span class="k">-</span><span class="w"> </span>Use appropriate aggregations and joins
+<span class="k">-</span><span class="w"> </span>Include comments explaining complex logic
+<span class="k">-</span><span class="w"> </span>Format results for readability
+<span class="k">-</span><span class="w"> </span>Provide data-driven recommendations
+
+For each analysis:
+<span class="k">-</span><span class="w"> </span>Explain the query approach
+<span class="k">-</span><span class="w"> </span>Document any assumptions
+<span class="k">-</span><span class="w"> </span>Highlight key findings
+<span class="k">-</span><span class="w"> </span>Suggest next steps based on data
+
+Always ensure queries are efficient and cost-effective.
+</code></pre></div>
+
+<h3>Database query validator</h3>
+<p>A subagent that allows Bash access but validates commands to permit only read-only SQL queries:</p>
+<div class="codehilite"><pre><span></span><code>---
+name: db-reader
+description: Execute read-only database queries. Use when analyzing data or generating reports.
+tools: Bash
+hooks:
+  PreToolUse:
+<span class="w">    </span><span class="k">-</span><span class="w"> </span>matcher: &quot;Bash&quot;
+      hooks:
+<span class="w">        </span><span class="k">-</span><span class="w"> </span>type: command
+<span class="gu">          command: &quot;./scripts/validate-readonly-query.sh&quot;</span>
+<span class="gu">---</span>
+
+You are a database analyst with read-only access. Execute SELECT queries to answer questions about the data.
+</code></pre></div>
+
+<hr />
+<p>Source: <a href="https://code.claude.com/docs/en/sub-agents.md">Claude Code Official Documentation - Subagents</a></p>
+</body>
+</html>
